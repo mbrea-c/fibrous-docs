@@ -1,0 +1,60 @@
+{
+  "nodes": {
+    "fibrous": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783011786,
+        "narHash": "sha256-COBqNQcDlfOhbjMQKX1yH0oPC+AjkLHrHd8VRQKCKJg=",
+        "path": "/home/manuel/src/nui-reactive",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/manuel/src/nui-reactive",
+        "type": "path"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1782723713,
+        "narHash": "sha256-oPXCU/SSUokcGaJREHibG1CBX3+s/W7orDWQOZDsEeQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b5aa0fbd538984f6e3d201be0005b4463d8b09f8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nvim-wasm-core": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1783011808,
+        "narHash": "sha256-gwSJmB2ArBKhJoMWxrEAosnK0d79O0q0soBpiiZuF6E=",
+        "path": "/home/manuel/src/nvim-wasm-core",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/manuel/src/nvim-wasm-core",
+        "type": "path"
+      }
+    },
+    "root": {
+      "inputs": {
+        "fibrous": "fibrous",
+        "nixpkgs": [
+          "nvim-wasm-core",
+          "nixpkgs"
+        ],
+        "nvim-wasm-core": "nvim-wasm-core"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
