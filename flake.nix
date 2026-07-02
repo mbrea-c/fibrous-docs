@@ -7,9 +7,9 @@
     #   fibrous.url = "github:<owner>/fibrous.nvim";
     # so CI (GitHub Pages workflow) can fetch them. Absolute path inputs are
     # local-development only (relative ones cannot escape the flake root).
-    nvim-wasm-core.url = "path:/home/manuel/src/nvim-wasm-core";
+    nvim-wasm-core.url = "github:mbrea-c/nvim-wasm-core";
     fibrous = {
-      url = "path:/home/manuel/src/nui-reactive";
+      url = "github:mbrea-c/fibrous.nvim";
       flake = false;
     };
     nixpkgs.follows = "nvim-wasm-core/nixpkgs";
