@@ -42,6 +42,7 @@
             plugins = [ fibrous ];
             initLua = ./site/init.lua;
             font = {
+              family = "monospace";
               px = 17;
             };
           };

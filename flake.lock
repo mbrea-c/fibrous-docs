@@ -3,14 +3,17 @@
     "fibrous": {
       "flake": false,
       "locked": {
-        "lastModified": 1783011786,
-        "narHash": "sha256-COBqNQcDlfOhbjMQKX1yH0oPC+AjkLHrHd8VRQKCKJg=",
-        "path": "/home/manuel/src/nui-reactive",
-        "type": "path"
+        "lastModified": 1783026356,
+        "narHash": "sha256-A06MGz0N8t/P0A+YKkE6Zp49ekkUFrZKIFhso2P/YLY=",
+        "owner": "mbrea-c",
+        "repo": "fibrous.nvim",
+        "rev": "866abe0a02c05622602652b62a432adad33b5d8c",
+        "type": "github"
       },
       "original": {
-        "path": "/home/manuel/src/nui-reactive",
-        "type": "path"
+        "owner": "mbrea-c",
+        "repo": "fibrous.nvim",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -34,14 +37,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1783011808,
-        "narHash": "sha256-gwSJmB2ArBKhJoMWxrEAosnK0d79O0q0soBpiiZuF6E=",
-        "path": "/home/manuel/src/nvim-wasm-core",
-        "type": "path"
+        "lastModified": 1783012989,
+        "narHash": "sha256-axwyZQndq2yklUniupEXiiDfp+WOpQl6B9JX878RS7U=",
+        "owner": "mbrea-c",
+        "repo": "nvim-wasm-core",
+        "rev": "1f68bba6fc95f5d9abd2b64c13a755682718172c",
+        "type": "github"
       },
       "original": {
-        "path": "/home/manuel/src/nvim-wasm-core",
-        "type": "path"
+        "owner": "mbrea-c",
+        "repo": "nvim-wasm-core",
+        "type": "github"
       }
     },
     "root": {
