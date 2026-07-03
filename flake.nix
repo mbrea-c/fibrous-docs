@@ -41,6 +41,7 @@
           site = nvim-wasm-core.lib.${system}.mkNvimWasmWeb {
             plugins = [ fibrous ];
             initLua = ./site/init.lua;
+            extraLuaDirs = [ ./site/lua ];
             font = {
               family = "monospace";
               px = 17;
