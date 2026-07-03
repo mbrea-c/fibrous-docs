@@ -37,11 +37,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1783113996,
-        "narHash": "sha256-kD4M+Px6i+TlSUnB7dg3d9IOVxObLv1icbPNMszrZxM=",
+        "lastModified": 1783116155,
+        "narHash": "sha256-EkBorUAs5JxAawy0yzNrThFaEbV0aWdB3j9C5v3+0Sc=",
         "owner": "mbrea-c",
         "repo": "nvim-wasm-core",
-        "rev": "61744d3ea9eb791577926152d14d47eef373e17d",
+        "rev": "8f20cfca38c8275baa224d0024c1a4de32ca1bc9",
         "type": "github"
       },
       "original": {
