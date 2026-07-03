@@ -4,8 +4,21 @@
 -- Everything below is deferred to VimEnter because init.lua is sourced
 -- *before* pack/*/start plugins land on the runtimepath (:h load-plugins).
 
-vim.opt.shortmess:append("I") -- welcome panel replaces the intro screen
+vim.opt.shortmess:append("I") -- the homepage replaces the intro screen
 vim.o.swapfile = false
+vim.o.laststatus = 0 -- no statusline under the fullscreen page
+
+-- nvim.wasm has no loadable treesitter parsers (bundled ones are dlopen'd
+-- .so files), but runtime ftplugins (lua, markdown, ...) call
+-- vim.treesitter.start() unguarded — any :e foo.lua would error. Soften it
+-- browser-wide: no parser simply means no treesitter highlighting.
+do
+	local ts_start = vim.treesitter.start
+	---@diagnostic disable-next-line: duplicate-set-field
+	vim.treesitter.start = function(...)
+		pcall(ts_start, ...)
+	end
+end
 
 vim.api.nvim_create_autocmd("VimEnter", {
 	once = true,
@@ -20,10 +33,15 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		local mount = require("fibrous.inline.mount")
 
 		vim.schedule(function()
+			-- follow: focus-follows-mouse — the web client streams pointer motion
+			-- as nvim_input_mouse "move" events, and fibrous moves the cursor to
+			-- the pointer (hover, and traversal into inputs, ride along). A
+			-- browser page is where FFM feels native; keyboard-first terminal
+			-- users would find the cursor yanked around, so it stays opt-in there.
 			local handle = mount.window(
 				require("webapp"),
 				{},
-				{ winid = vim.api.nvim_get_current_win(), mode = "scroll" }
+				{ winid = vim.api.nvim_get_current_win(), mode = "scroll", mouse = { follow = true } }
 			)
 			handle.focus()
 		end)
