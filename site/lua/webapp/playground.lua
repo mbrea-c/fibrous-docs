@@ -139,9 +139,17 @@ function M.section(ctx, props)
             props = { gap = 0, grow = 3, max_width = EDITOR_COLS },
             children = {
               {
-                -- no explicit width: stretches to the (clamped) column
+                -- no explicit width: stretches to the (clamped) column.
+                -- insert_on_click: raw_buffers default to normal-mode clicks,
+                -- but this one is an editor — tapping it should start typing
+                -- (on mobile that's also what summons the keyboard)
                 comp = ui.raw_buffer,
-                props = { bufnr = entry.bufnr, height = entry.rows, style = { border = true } },
+                props = {
+                  bufnr = entry.bufnr,
+                  height = entry.rows,
+                  insert_on_click = true,
+                  style = { border = true },
+                },
               },
               {
                 comp = ui.row,
