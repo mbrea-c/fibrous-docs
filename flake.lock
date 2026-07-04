@@ -3,11 +3,11 @@
     "fibrous": {
       "flake": false,
       "locked": {
-        "lastModified": 1783156953,
-        "narHash": "sha256-2uvQdQy/YrL4ptIszHvck99PQGDXI63WgygJtdYT3zk=",
+        "lastModified": 1783158229,
+        "narHash": "sha256-SMe2ZRc/xW4c71JiDtokzpI4OVueHXSI0+qvXVxGkW8=",
         "owner": "mbrea-c",
         "repo": "fibrous.nvim",
-        "rev": "df48ffac606c2b76167495e2dbd664bde0c65169",
+        "rev": "fb3baa381f0e1d2dd92130c273ba6ca073fa0afd",
         "type": "github"
       },
       "original": {
