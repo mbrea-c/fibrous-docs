@@ -30,7 +30,7 @@ return function(ctx)
     children = {
       {
         comp = ui.label,
-        props = { text = ("Count: %d"):format(count.get()), hl = "Title" },
+        props = { text = ("Count: %d"):format(count.get()), style = { text_hl = "Title" } },
       },
       {
         comp = ui.row,
@@ -72,7 +72,7 @@ return function(ctx)
   end
 
   local children = {
-    { comp = ui.label, props = { text = "things to do", hl = "Title" } },
+    { comp = ui.label, props = { text = "things to do", style = { text_hl = "Title" } } },
   }
   for i, item in ipairs(items.get()) do
     children[#children + 1] = {
@@ -91,7 +91,7 @@ return function(ctx)
   children[#children + 1] = {
     comp = ui.text_input,
     props = {
-      border = true,
+      style = { border = true },
       on_submit = function(value)
         update(function(next)
           next[#next + 1] = { text = value, done = false }
@@ -111,10 +111,11 @@ end
       .. "speaks flexbox, rendered entirely as text. Move the cursor over the "
       .. "hoverable chip to see state-driven styling.",
     details = "Every node has margin, border, padding and a content box, laid out by a "
-      .. "flex pass over the component tree. Styles are highlight groups: `hl` colors text, "
-      .. "`bg` fills rects, `hover_hl` applies while the cursor is inside — the same hit-map "
-      .. "that routes clicks and <CR>. Borders come from a theme (rounded, double, single) "
-      .. "and restyle per instance.",
+      .. "flex pass over the component tree. All styling lives in the `style` prop, in one "
+      .. "vocabulary: `text_hl` colors text, `hl` fills the rect, and `_hover`/`_focus` "
+      .. "override any key while the state holds — hover rides the same hit-map that routes "
+      .. "clicks and <CR>. Borders come from a theme (rounded, double, single) and restyle "
+      .. "per instance.",
     code = [==[
 local ui = require("fibrous.inline.components")
 
@@ -129,15 +130,15 @@ return function()
         children = {
           {
             comp = ui.label,
-            props = { text = "padded", border = true, padding = { x = 3, y = 1 } },
+            props = { text = "padded", style = { border = true, padding = { x = 3, y = 1 } } },
           },
           {
             comp = ui.label,
-            props = { text = "double", border = "double", padding = { x = 1 } },
+            props = { text = "double", style = { border = "double", padding = { x = 1 } } },
           },
           {
             comp = ui.col,
-            props = { border = true, grow = 1, align = "center", justify = "center" },
+            props = { style = { border = true }, grow = 1, align = "center", justify = "center" },
             children = {
               { comp = ui.label, props = { text = "grow + center" } },
             },
@@ -149,8 +150,7 @@ return function()
         props = {
           text = " hover me ",
           role = "button",
-          hover_hl = "IncSearch",
-          border = "rounded",
+          style = { border = "rounded", _hover = { hl = "IncSearch" } },
         },
       },
     },
@@ -188,10 +188,10 @@ return function(ctx)
 
   return {
     comp = ui.col,
-    props = { border = "double", padding = { x = 2, y = 1 } },
+    props = { style = { border = "double", padding = { x = 2, y = 1 } } },
     children = {
-      { comp = ui.label, props = { text = "it is currently", hl = "Comment" } },
-      { comp = ui.label, props = { text = now.get(), hl = "Title" } },
+      { comp = ui.label, props = { text = "it is currently", style = { text_hl = "Comment" } } },
+      { comp = ui.label, props = { text = now.get(), style = { text_hl = "Title" } } },
     },
   }
 end
@@ -251,13 +251,13 @@ return function(ctx)
       comp = ui.col,
       props = { grow = 1, gap = 1 },
       children = {
-        { comp = ui.label, props = { text = label, hl = "Title" } },
+        { comp = ui.label, props = { text = label, style = { text_hl = "Title" } } },
         {
           -- wrap is the raw_buffer default: watch the mirror wrap the long
           -- comment exactly like the float does. The border brightens while
           -- the widget is focused.
           comp = ui.raw_buffer,
-          props = { bufnr = bufnr, border = true, render = render, height = #LINES + 3 },
+          props = { bufnr = bufnr, style = { border = true }, render = render, height = #LINES + 3 },
         },
       },
     }

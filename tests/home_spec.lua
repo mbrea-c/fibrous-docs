@@ -96,6 +96,41 @@ describe("webapp home", function()
     handle.unmount()
   end)
 
+  it("section separators span the full page width", function()
+    local handle = mount_home()
+
+    -- a separator row is nothing but spaces and ─ (border rows always carry
+    -- corner/side chars too, so they never match)
+    local width
+    for _, l in ipairs(lines_of(handle.bufnr)) do
+      if l:find("─") and not l:find("[^%s─]") then
+        local _, n = l:gsub("─", "")
+        width = n
+        break
+      end
+    end
+    assert.equal(180 - 4, width) -- page width minus the x = 2 padding
+
+    handle.unmount()
+  end)
+
+  it("a narrow viewport shrinks the editor, not the preview", function()
+    vim.o.columns = 110
+    vim.o.lines = 60
+    local handle = mount.floating(require("webapp"), {}, { width = 100, height = 50, row = 0, col = 0, mode = "scroll" })
+
+    -- the preview keeps its minimum width, so the counter renders unclipped...
+    local row = find_row(handle, "Count: 0")
+    assert.truthy(row, "preview squeezed to nothing")
+    -- ...because the editor is what gave up the width: the preview's content
+    -- now starts left of where the fixed 80-col editor used to end
+    local line = lines_of(handle.bufnr)[row + 1]
+    local prefix = line:sub(1, line:find("Count: 0", 1, true) - 1)
+    assert.is_true(vim.fn.strdisplaywidth(prefix) < 80)
+
+    handle.unmount()
+  end)
+
   it("editors are real lua buffers seeded with code that already previews", function()
     local handle = mount_home()
 

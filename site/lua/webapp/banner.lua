@@ -26,12 +26,12 @@ Y8P 888  888   Y88P   888 888  888  888]], "\n")
 return function()
   local children = {}
   for _, line in ipairs(FIBROUS) do
-    children[#children + 1] = { comp = ui.label, props = { text = line, hl = "Function" } }
+    children[#children + 1] = { comp = ui.label, props = { text = line, style = { text_hl = "Function" } } }
   end
   for _, line in ipairs(NVIM) do
-    children[#children + 1] = { comp = ui.label, props = { text = line, hl = "Comment" } }
+    children[#children + 1] = { comp = ui.label, props = { text = line, style = { text_hl = "Comment" } } }
   end
   -- align_self: center the art block as a unit within the page column —
   -- centering the labels individually would shear the figlet art apart.
-  return { comp = ui.col, props = { padding = { y = 1 }, align_self = "center" }, children = children }
+  return { comp = ui.col, props = { style = { padding = { y = 1 } }, align_self = "center" }, children = children }
 end

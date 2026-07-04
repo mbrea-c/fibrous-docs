@@ -1,7 +1,9 @@
--- A live playground section: intro paragraph, then an 80-col lua editor (a
--- raw_buffer over a real buffer, so all of vim works in it) beside the
--- component its code evaluates to, reload button + <C-CR> below the editor,
--- and a longer explanation underneath.
+-- A live playground section: intro paragraph, then a lua editor (a raw_buffer
+-- over a real buffer, so all of vim works in it) beside the component its code
+-- evaluates to, reload button + <C-CR> below the editor, and a longer
+-- explanation underneath. The pair shares the row responsively: the editor
+-- takes up to 80 cols, the preview at least PREVIEW_MIN_COLS — on a narrow
+-- (mobile) viewport the editor is what shrinks, not the preview.
 --
 -- The editor buffer is the source of truth; reload = read it, compile it,
 -- swap the preview. Compile errors keep the last good preview and show the
@@ -12,7 +14,8 @@ local ui = require("fibrous.inline.components")
 
 local M = {}
 
-local EDITOR_COLS = 80
+local EDITOR_COLS = 80 -- the editor's max width; it shrinks on narrow viewports
+local PREVIEW_MIN_COLS = 30 -- the preview never gets squeezed below this
 
 -- One editor buffer (+ its reload closure and initial compile) per example,
 -- created lazily and kept for the session — remounts reuse the user's edits.
@@ -29,7 +32,7 @@ local function boundary(user_comp)
     end
     return {
       comp = ui.paragraph,
-      props = { text = "render error:\n" .. tostring(tree), hl = "ErrorMsg" },
+      props = { text = "render error:\n" .. tostring(tree), style = { text_hl = "ErrorMsg" } },
     }
   end
 end
@@ -114,7 +117,7 @@ function M.section(ctx, props)
   if s.err then
     preview[#preview + 1] = {
       comp = ui.paragraph,
-      props = { text = "error: " .. s.err, hl = "ErrorMsg" },
+      props = { text = "error: " .. s.err, style = { text_hl = "ErrorMsg" } },
     }
   end
   if s.comp then
@@ -125,7 +128,7 @@ function M.section(ctx, props)
     comp = ui.col,
     props = { gap = 1 },
     children = {
-      { comp = ui.label, props = { text = ex.title, hl = "Title" } },
+      { comp = ui.label, props = { text = ex.title, style = { text_hl = "Title" } } },
       { comp = ui.paragraph, props = { text = ex.intro } },
       {
         comp = ui.row,
@@ -133,11 +136,12 @@ function M.section(ctx, props)
         children = {
           {
             comp = ui.col,
-            props = { gap = 0 },
+            props = { gap = 0, grow = 3, max_width = EDITOR_COLS },
             children = {
               {
+                -- no explicit width: stretches to the (clamped) column
                 comp = ui.raw_buffer,
-                props = { bufnr = entry.bufnr, width = EDITOR_COLS, height = entry.rows, border = true },
+                props = { bufnr = entry.bufnr, height = entry.rows, style = { border = true } },
               },
               {
                 comp = ui.row,
@@ -152,19 +156,24 @@ function M.section(ctx, props)
                       end,
                     },
                   },
-                  { comp = ui.label, props = { text = "or <C-CR> inside the editor", hl = "Comment" } },
+                  { comp = ui.label, props = { text = "or <C-CR> inside the editor", style = { text_hl = "Comment" } } },
                 },
               },
             },
           },
           {
             comp = ui.col,
-            props = { grow = 1, border = "rounded", padding = { x = 2, y = 1 }, gap = 1 },
+            props = {
+              grow = 1,
+              min_width = PREVIEW_MIN_COLS,
+              style = { border = "rounded", padding = { x = 2, y = 1 } },
+              gap = 1,
+            },
             children = preview,
           },
         },
       },
-      { comp = ui.paragraph, props = { text = ex.details, hl = "Comment" } },
+      { comp = ui.paragraph, props = { text = ex.details, style = { text_hl = "Comment" } } },
     },
   }
 end

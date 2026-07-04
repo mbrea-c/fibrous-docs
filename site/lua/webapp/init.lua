@@ -22,15 +22,18 @@ return function()
     { comp = ui.paragraph, props = { text = PITCH } },
   }
   for _, ex in ipairs(examples) do
+    -- Full-width separator: an empty col stretches to the page width (default
+    -- cross-axis align), and its top border draws the rule — no hardcoded rep
+    -- count to fall short on wide screens.
     children[#children + 1] = {
-      comp = ui.label,
-      props = { text = string.rep("─", 100), hl = "NonText" },
+      comp = ui.col,
+      props = { style = { border = { top = true, hl = "NonText" } } },
     }
     children[#children + 1] = { comp = playground.section, props = { example = ex } }
   end
   return {
     comp = ui.col,
-    props = { gap = 2, padding = { x = 2, y = 1 } },
+    props = { gap = 2, style = { padding = { x = 2, y = 1 } } },
     children = children,
   }
 end
