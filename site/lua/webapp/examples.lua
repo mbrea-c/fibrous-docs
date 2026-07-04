@@ -197,4 +197,80 @@ return function(ctx)
 end
 ]==],
   },
+
+  {
+    name = "policies",
+    title = "Two focus policies",
+    intro = "Embedded editors never capture your cursor: hjkl glides straight over them, "
+      .. "and <CR> (or i, or a click) is what enters one — the focused widget's border "
+      .. "brightens. Below, the same wrapping lua buffer twice: the left widget keeps its "
+      .. "live float always visible; the right one shows a highlight-transcribed mirror "
+      .. "until you actually enter it. Try gliding, entering, editing, and leaving "
+      .. "(hjkl at an edge steps back out).",
+    details = "Every subwindow paints a text mirror of its visible slice into the page — "
+      .. "wrapped lines, tabs and horizontal scroll reproduced — so the gliding cursor "
+      .. "always sits on real characters and yanks copy real text. "
+      .. 'render = "focus" (the default) hides the float until you enter the widget and '
+      .. "transcribes the buffer's queryable highlights (regex syntax, diagnostics, any "
+      .. 'persistent extmarks) onto the mirror; render = "always" keeps the editable '
+      .. "float on top at all times. The trade: \"always\" is live down to treesitter "
+      .. "fidelity but sits above the page (selections highlight around it), \"focus\" "
+      .. "is flat page text until entered. Per-component props — pick per widget.",
+    code = [==[
+local ui = require("fibrous.inline.components")
+
+local LINES = {
+  "-- a real lua buffer, shown twice; this comment wraps in the box",
+  "local function greet(name)",
+  "  return ('hi, %s!'):format(name)",
+  "end",
+  "return greet('fibrous')",
+}
+
+return function(ctx)
+  local bufs = ctx.use_ref(nil)
+  if not bufs.current then
+    local function make()
+      local b = vim.api.nvim_create_buf(false, true)
+      vim.api.nvim_buf_set_lines(b, 0, -1, false, LINES)
+      vim.bo[b].syntax = "lua"
+      return b
+    end
+    bufs.current = { make(), make() }
+  end
+  ctx.use_effect(function()
+    local a, b = bufs.current[1], bufs.current[2]
+    return function()
+      pcall(vim.api.nvim_buf_delete, a, { force = true })
+      pcall(vim.api.nvim_buf_delete, b, { force = true })
+    end
+  end, {})
+
+  local function editor(label, bufnr, render)
+    return {
+      comp = ui.col,
+      props = { grow = 1, gap = 1 },
+      children = {
+        { comp = ui.label, props = { text = label, hl = "Title" } },
+        {
+          -- wrap is the raw_buffer default: watch the mirror wrap the long
+          -- comment exactly like the float does. The border brightens while
+          -- the widget is focused.
+          comp = ui.raw_buffer,
+          props = { bufnr = bufnr, border = true, render = render, height = #LINES + 3 },
+        },
+      },
+    }
+  end
+  return {
+    comp = ui.row,
+    props = { gap = 3 },
+    children = {
+      editor('render = "always"', bufs.current[1], "always"),
+      editor('render = "focus"', bufs.current[2], "focus"),
+    },
+  }
+end
+]==],
+  },
 }
