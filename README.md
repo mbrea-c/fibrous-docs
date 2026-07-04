@@ -23,6 +23,26 @@ page instead.
 Inside the editor: the welcome panel is a fibrous component; `:Examples`
 lists the demos (`:Example counter`, `hello`, `form`, `sidebar`, `panel`).
 
+## Native preview & benchmark
+
+```sh
+nix run .#native   # the same homepage in a real terminal Neovim (:qa! exits)
+nix run .#bench    # headless timings of the homepage (mount, re-render,
+                   # relayout, scroll resync, hover)
+```
+
+Both default to the flake's **pinned** fibrous input — what the built site
+ships. Point them at a local tree (no lock bump needed) with:
+
+```sh
+FIBROUS_PATH=../nui-reactive nix run .#bench
+```
+
+`.#native` answers "is it slow, or is it slow *in wasm*"; `.#bench` puts
+numbers on the native half (knobs: `BENCH_COLS`, `BENCH_LINES`, `BENCH_N`).
+The bench also runs straight from the checkout, against the sibling fibrous:
+`nvim --headless -u NONE -i NONE -l tests/bench.lua`.
+
 ## Build
 
 ```sh

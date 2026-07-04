@@ -52,6 +52,8 @@
       );
 
       # `nix run` — serve the site locally.
+      # `nix run .#native` — the same homepage in a real terminal Neovim.
+      # `nix run .#bench`  — headless benchmark of the homepage.
       apps = forAllSystems (
         system: pkgs:
         let
@@ -81,11 +83,56 @@
               PY
             '';
           };
+
+          # The homepage in NATIVE Neovim — same site/init.lua, same webapp
+          # modules, fibrous as a pack/start plugin — so "is it slow, or is
+          # it slow *in wasm*" has a one-command answer. fibrous defaults to
+          # the flake input (the pinned rev the built site ships); export
+          # FIBROUS_PATH=/path/to/checkout to debug a local tree without a
+          # lock bump.
+          native = pkgs.writeShellApplication {
+            name = "fibrous-docs-native";
+            runtimeInputs = [ pkgs.neovim ];
+            text = ''
+              fib="''${FIBROUS_PATH:-${fibrous}}"
+              docs=${self}
+              pack="$(mktemp -d)"
+              trap 'rm -rf "$pack"' EXIT
+              mkdir -p "$pack/pack/fibrous/start"
+              ln -s "$fib" "$pack/pack/fibrous/start/fibrous"
+              echo "fibrous-docs native (fibrous: $fib) — :qa! to exit"
+              nvim -i NONE \
+                --cmd "set packpath^=$pack" \
+                --cmd "lua package.path = '$docs/site/lua/?.lua;$docs/site/lua/?/init.lua;' .. package.path" \
+                -u "$docs/site/init.lua"
+            '';
+          };
+
+          # Headless benchmark of the real homepage (tests/bench.lua): mount,
+          # re-render, relayout, scroll resync, hover — printed ms stats.
+          # Same FIBROUS_PATH override; BENCH_COLS/BENCH_LINES/BENCH_N knobs.
+          bench = pkgs.writeShellApplication {
+            name = "fibrous-docs-bench";
+            runtimeInputs = [ pkgs.neovim ];
+            text = ''
+              export DOCS_ROOT=${self}
+              export FIBROUS_PATH="''${FIBROUS_PATH:-${fibrous}}"
+              exec nvim --headless -u NONE -i NONE -l ${self}/tests/bench.lua "$@"
+            '';
+          };
         in
         {
           default = {
             type = "app";
             program = "${serve}/bin/fibrous-docs-serve";
+          };
+          native = {
+            type = "app";
+            program = "${native}/bin/fibrous-docs-native";
+          };
+          bench = {
+            type = "app";
+            program = "${bench}/bin/fibrous-docs-bench";
           };
         }
       );
