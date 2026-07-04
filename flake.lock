@@ -3,11 +3,11 @@
     "fibrous": {
       "flake": false,
       "locked": {
-        "lastModified": 1783158229,
-        "narHash": "sha256-SMe2ZRc/xW4c71JiDtokzpI4OVueHXSI0+qvXVxGkW8=",
+        "lastModified": 1783159833,
+        "narHash": "sha256-OtSeJmI2OclQPXZGDYdTuXxsOkTlsj9yDZVc1xvzVpE=",
         "owner": "mbrea-c",
         "repo": "fibrous.nvim",
-        "rev": "fb3baa381f0e1d2dd92130c273ba6ca073fa0afd",
+        "rev": "e82a3f7c9541a2b5b1a979a237575d50dd267627",
         "type": "github"
       },
       "original": {
@@ -37,11 +37,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1783156975,
-        "narHash": "sha256-A6blf6WEwww0RRt3osVdFhizeaEnQynyBQjmmvMc+b8=",
+        "lastModified": 1783159864,
+        "narHash": "sha256-suE+FrSjJbI8MmUWESbX6ow+GNap1y0xCWQtapEu9FQ=",
         "owner": "mbrea-c",
         "repo": "nvim-wasm-core",
-        "rev": "b1b4a0bd2c71e7aff5ca9922abc7624bfb6c94c9",
+        "rev": "f95971d105644025bc3e8de85f8965a15bd92df6",
         "type": "github"
       },
       "original": {
