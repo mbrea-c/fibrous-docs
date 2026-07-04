@@ -13,6 +13,7 @@ local TITLES = {
   "Cursor-native widgets",
   "A CSS-like box model",
   "Effects & timers",
+  "Animations",
   "Two focus policies",
 }
 

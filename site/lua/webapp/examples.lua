@@ -199,6 +199,60 @@ end
   },
 
   {
+    name = "animation",
+    title = "Animations",
+    intro = "ui.animation maps a looping progress value onto text: give it a duration and a "
+      .. "value(progress) function, and it handles the timer, the frame diffing and the "
+      .. "teardown. Edit the wave, the width, the glyphs — and reload.",
+    details = "value(progress) receives progress in [0, 1) — elapsed time modulo duration — "
+      .. "and returns the text or spans to show; the bounce is just a triangle wave inside it. "
+      .. "A frame only touches the buffer when the rendered value actually changes, and each "
+      .. "commit re-renders only the animation leaf (the memoized fast path), so a 30fps timer "
+      .. "costs almost nothing while the dot sits still between cells. This is the same "
+      .. "machinery as the clock above: state + effects, packaged.",
+    code = [==[
+local ui = require("fibrous.inline.components")
+
+local WIDTH = 30
+
+local function bounce(progress)
+  -- triangle wave: out and back once per loop
+  local t = progress < 0.5 and progress * 2 or 2 - progress * 2
+  local pos = math.floor(t * (WIDTH - 1) + 0.5)
+  return {
+    string.rep(".", pos),
+    { "o", hl = "Title" },
+    string.rep(".", WIDTH - 1 - pos),
+  }
+end
+
+return function()
+  return {
+    comp = ui.col,
+    props = { gap = 1 },
+    children = {
+      {
+        comp = ui.animation,
+        props = { duration = 1.3, value = bounce },
+      },
+      {
+        comp = ui.animation,
+        props = {
+          duration = 10,
+          fps = 4,
+          style = { text_hl = "Comment" },
+          value = function(p)
+            return ("%3d%% of a 10s loop"):format(math.floor(p * 100))
+          end,
+        },
+      },
+    },
+  }
+end
+]==],
+  },
+
+  {
     name = "policies",
     title = "Two focus policies",
     intro = "Embedded editors never capture your cursor: hjkl glides straight over them, "
