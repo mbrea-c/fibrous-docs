@@ -100,17 +100,18 @@ describe("webapp home", function()
   it("section separators span the full page width", function()
     local handle = mount_home()
 
-    -- a separator row is nothing but spaces and ─ (border rows always carry
-    -- corner/side chars too, so they never match)
-    local width
+    -- a separator row is nothing but spaces and ─ (bordered nodes with side
+    -- chars never match). The nav bar draws its own full-page bottom rule now,
+    -- so assert a home separator (page width minus the x = 2 padding) is PRESENT
+    -- among the pure-─ lines, rather than grabbing the first one.
+    local widths = {}
     for _, l in ipairs(lines_of(handle.bufnr)) do
       if l:find("─") and not l:find("[^%s─]") then
         local _, n = l:gsub("─", "")
-        width = n
-        break
+        widths[n] = true
       end
     end
-    assert.equal(180 - 4, width) -- page width minus the x = 2 padding
+    assert.is_true(widths[180 - 4], "no home separator at the padded page width")
 
     handle.unmount()
   end)
