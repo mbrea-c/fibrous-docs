@@ -10,23 +10,37 @@
 -- The flex/layout props every node accepts (col, row, and every leaf).
 local LAYOUT_PROPS = {
 	{ "width/height", "integer", "fixed size on an axis (columns/rows)" },
-	{ "min_width/max_width", "integer", "clamp the main-axis size (responsive shrink/grow)" },
-	{ "grow", "number", "share of leftover main-axis space (flex-grow)" },
-	{ "gap", "integer", "space between children (containers only)" },
-	{ "align", "string", "cross-axis alignment of children: start|center|end|stretch" },
-	{ "justify", "string", "main-axis distribution: start|center|end|between|around" },
-	{ "align_self", "string", "override the parent's cross-axis alignment for this node" },
+	{ "min_width/max_width", "integer", "clamp the width (responsive shrink/grow)" },
+	{ "min_height/max_height", "integer", "clamp the height" },
+	{ "grow", "number", "weight for sharing leftover main-axis space (flex-grow; 0 = don't grow)" },
+	{ "gap", "integer", "space between children (containers only: col/row/container)" },
+	{ "align", "string", "cross-axis alignment of children: stretch (default) | start | center | end" },
+	{ "justify", "string", "main-axis distribution: start (default) | center | end | space-between" },
+	{ "align_self", "string", "override the parent's `align` for this node alone" },
 }
 
--- The style vocabulary (props.style), shared by every node.
+-- The style vocabulary (props.style), shared by every node. The key set is
+-- CLOSED — an unknown style key errors (as do the removed flat props hl/bg/etc.
+-- at the node top level: styling all lives under props.style).
 local STYLE_PROPS = {
 	{ "text_hl", "string", "foreground highlight group for the text" },
-	{ "hl", "string", "background fill of the whole node rect" },
-	{ "border", "bool|string|table", "true|\"rounded\"|\"double\"|\"single\", or per-side { left, top, ... , hl }" },
+	{ "hl", "string", "background fill of the whole (border-box) node rect" },
+	{ "border_hl", "string", "recolour the border only (wins over a border spec's own hl; stays on the fast path)" },
+	{ "border", "bool|string|table", "true|\"rounded\"|\"double\"|\"single\", or per-side { left, top, …, hl }" },
 	{ "padding", "table", "inner spacing: { x = n, y = n } or per-side { left, right, top, bottom }" },
 	{ "margin", "table", "outer spacing, same shape as padding" },
-	{ "_hover", "table", "style overrides applied while the cursor hovers the node" },
-	{ "_focus", "table", "style overrides applied while the node (or its subwindow) is focused" },
+	{ "_hover", "table", "style keys applied while the cursor hovers the node (merged key-wise)" },
+	{ "_focus", "table", "style keys applied while the node (or its subwindow) is focused" },
+}
+
+-- The interaction vocabulary: node-level props (not under `style`) that make a
+-- node respond to the cursor. Shared reference, surfaced on the API ▸ Interaction
+-- tab; button/checkbox/text_input/raw_buffer set the relevant ones for you.
+local INTERACTION_PROPS = {
+	{ "role", "string", "\"button\" | \"checkbox\" — marks the node interactive (hover cue + activation)" },
+	{ "on_press", "fun(x)", "role=\"button\": fired by <CR>/<Space>/click (x = cursor column within the node)" },
+	{ "on_toggle", "fun(v)", "role=\"checkbox\": fired with the NEW checked value" },
+	{ "on_key", "table", "{ [key] = fun(x) } — app keys routed to the node under the cursor; the key must be listed in the mount `keys` opt (needs no role)" },
 }
 
 return {
@@ -439,6 +453,8 @@ end
 			{ "children", "node[]", "laid out as a col (gap/align/justify apply)" },
 			{ "height", "integer", "viewport height — makes it a scrolling region" },
 			{ "mode", "string", "\"scroll\" (default) native scroll | \"fixed\" clip to height" },
+			{ "scroll_x", "boolean", "false pins horizontal scroll (leftcol 0) — e.g. a vertical-only transcript" },
+			{ "scroll_y", "boolean", "false pins vertical scroll (topline 1)" },
 			{ "keys", "string[]", "normal-mode keys routed to descendants' on_key handlers" },
 		},
 		layout = true,
@@ -470,4 +486,5 @@ end
 
 	LAYOUT_PROPS = LAYOUT_PROPS,
 	STYLE_PROPS = STYLE_PROPS,
+	INTERACTION_PROPS = INTERACTION_PROPS,
 }

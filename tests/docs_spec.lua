@@ -92,6 +92,11 @@ describe("webapp docs shell", function()
     local text = page_text(handle)
     -- the checkbox doc mentions its on_toggle prop
     assert.truthy(text:find("on_toggle", 1, true), "checkbox doc not shown after selecting it")
+    -- the live PREVIEW must swap too, not just the prose/props: the checkbox
+    -- example renders "enable the thing"; the default col example rendered
+    -- "middle" — a stale col preview here is the fiber-reuse bug.
+    assert.truthy(text:find("enable the thing", 1, true), "checkbox preview did not render after switching")
+    assert.falsy(text:find("middle", 1, true), "stale col preview still showing after switching")
 
     handle.unmount()
   end)
@@ -126,11 +131,26 @@ describe("webapp docs shell", function()
     press(handle, "API")
     local text = page_text(handle)
 
-    for _, section in ipairs({ "Mounting", "Hooks", "Styling" }) do
+    for _, section in ipairs({ "Mounting", "Hooks", "Styling", "Interaction" }) do
       assert.truthy(text:find(section, 1, true), "API side-nav missing section: " .. section)
     end
     -- the default (Mounting) section documents the real entry points
     assert.truthy(text:find("mount.window", 1, true) or text:find("mount.floating", 1, true), "mount API not documented")
+
+    handle.unmount()
+  end)
+
+  it("documents the interaction surface (role/on_key) and the full style vocabulary", function()
+    local handle = mount_docs()
+    press(handle, "API")
+
+    press(handle, "Styling")
+    assert.truthy(page_text(handle):find("border_hl", 1, true), "border_hl style key not documented")
+
+    press(handle, "Interaction")
+    local text = page_text(handle)
+    assert.truthy(text:find("on_key", 1, true), "on_key not documented")
+    assert.truthy(text:find("role", 1, true), "role not documented")
 
     handle.unmount()
   end)

@@ -171,6 +171,50 @@ return {
 	},
 
 	{
+		id = "interaction",
+		name = "Interaction",
+		blocks = {
+			{
+				kind = "p",
+				text = "The whole app is ONE unmodifiable buffer; interactivity rides the cursor. A "
+					.. "node opts in with node-level props (NOT under `style`). `role` marks it a button "
+					.. "or checkbox: the deepest role-carrying node under the cursor takes the hover cue, "
+					.. "and <CR>/<Space>/click activates it. button/checkbox/text_input/raw_buffer set these "
+					.. "for you — reach for the raw props to make any node interactive.",
+			},
+			{ kind = "table", title = "props", rows = components_ref.INTERACTION_PROPS },
+			{ kind = "h", text = "on_key: app-defined keys" },
+			{
+				kind = "p",
+				text = "on_key routes a normal-mode key to whatever component sits under the cursor — a "
+					.. "generic hook for component-specific keybindings (no role required, so it draws no "
+					.. "hover). Each key MUST be declared in the mount `keys` opt so the host maps it; the "
+					.. "handler receives the cursor's column within the node, like on_press.",
+			},
+			{
+				kind = "code",
+				lines = {
+					"-- mount with the keys the app wants routed:",
+					'mount.window(App, {}, { keys = { "x", "<Tab>" } })',
+					"",
+					"-- a component handles them when the cursor is on it:",
+					"{ comp = ui.label, props = { text = row.title, on_key = {",
+					"  x = function() delete(row.id) end,",
+					'  ["<Tab>"] = function() cycle(row.id) end,',
+					"} } }",
+				},
+			},
+			{
+				kind = "p",
+				text = "Focus follows the cursor too: gliding hjkl over an embedded editor (text_input / "
+					.. "raw_buffer) passes straight over it; <CR>, i, or a click ENTERS it, and an edge "
+					.. "motion steps back out. _focus style keys apply while a node or its subwindow holds "
+					.. "focus. See the Home page's \"Two focus policies\" example.",
+			},
+		},
+	},
+
+	{
 		id = "model",
 		name = "Component model",
 		blocks = {
@@ -201,6 +245,16 @@ return {
 				text = "Props flow down; state (use_state) and refs (use_ref) are per-component. "
 					.. "Composition is just nesting nodes — the same model React popularised, rendered "
 					.. "entirely as text into a Neovim buffer.",
+			},
+			{ kind = "h", text = "memo" },
+			{
+				kind = "p",
+				text = "Reconciliation is positional: at each index a fiber is reused when its component "
+					.. "matches. Add `memo = true` to a function-component node and it bails out of "
+					.. "re-rendering while its props are shallow-equal (React.memo) — the fast path for a "
+					.. "stable subtree under a busy parent. To force the opposite (a full remount when a "
+					.. "slot represents a different logical thing), give that slot a distinct component "
+					.. "identity, since fibrous has no key prop.",
 			},
 		},
 	},
