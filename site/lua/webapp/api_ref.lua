@@ -40,6 +40,7 @@ return {
 					{ "mode", "string", "\"fixed\" (default) | \"scroll\"" },
 					{ "mouse", "table|false", "{ activate, follow }; false disables mouse maps" },
 					{ "keys", "string[]", "normal-mode keys routed to the hovered component's on_key" },
+					{ "anchor", "boolean", "keep the cursor on its entry across relayout; default true (false opts out)" },
 					{ "zindex", "integer", "root float z-index; default 10 (below nvim's float default)" },
 				},
 			},
@@ -59,6 +60,7 @@ return {
 					{ "mouse", "table|false", "{ activate, follow }; false disables mouse maps" },
 					{ "border", "string|string[]", "nvim_open_win border for the root float" },
 					{ "backdrop", "bool|integer", "dim the editor behind the app (modal effect)" },
+					{ "anchor", "boolean", "keep the cursor on its entry across relayout; default true (false opts out)" },
 					{ "zindex", "integer", "root float z-index; default 50" },
 				},
 			},
@@ -67,7 +69,7 @@ return {
 				kind = "p",
 				text = "Open a native split pane and mount over it; closing the pane tears the app down. "
 					.. "opts.split = { direction, position, size } picks the pane, plus the shared "
-					.. "mode/mouse/keys/zindex.",
+					.. "mode/mouse/keys/anchor/zindex.",
 			},
 			{
 				kind = "h",
@@ -163,6 +165,25 @@ return {
 			{ kind = "table", title = "style props", rows = components_ref.STYLE_PROPS },
 			{
 				kind = "p",
+				text = "A border can be a theme name for the quick case, or a table to customise it — "
+					.. "per-side toggles, a recolour, and an EMBEDDED TITLE painted into the edge. The "
+					.. "title is a bare string, or { text, align = left|center|right, pos = top|bottom, hl }.",
+			},
+			{
+				kind = "code",
+				lines = {
+					"-- a titled panel: title centered on the top edge",
+					"{ comp = ui.col, props = { style = {",
+					'  border = { "rounded", title = { text = " Details ", align = "center" } },',
+					"  padding = { x = 1 },",
+					"} }, children = { ... } }",
+					"",
+					'-- shorthand: a bare string titles the top-left',
+					'-- style = { border = { "single", title = "Log" } }',
+				},
+			},
+			{
+				kind = "p",
 				text = "Layout is a flexbox pass over the component tree. Every node — containers and "
 					.. "leaves alike — accepts these; gap only applies to containers (col/row/container).",
 			},
@@ -211,6 +232,18 @@ return {
 					.. "motion steps back out. _focus style keys apply while a node or its subwindow holds "
 					.. "focus. See the Home page's \"Two focus policies\" example.",
 			},
+			{ kind = "h", text = "cursor anchor" },
+			{
+				kind = "p",
+				text = "A relayout — a width resize rewraps every line, an insert shifts the tail — would "
+					.. "otherwise leave the cursor on its old absolute row, now holding different content "
+					.. "(\"swimming\"). While the surface is focused, fibrous instead keeps the cursor on the "
+					.. "same entry across the relayout, holding its screen row so the view doesn't jump: it "
+					.. "tracks the entry by `key` (reorder-stable) or, for keyless UIs, by the node's fiber "
+					.. "(resize-stable). It follows your own cursor moves AND scrolling, so it only ever "
+					.. "corrects a relayout — it never fights the wheel. On by default; pass `anchor = false` "
+					.. "to the mount (or a container) to opt out.",
+			},
 		},
 	},
 
@@ -249,12 +282,33 @@ return {
 			{ kind = "h", text = "memo" },
 			{
 				kind = "p",
-				text = "Reconciliation is positional: at each index a fiber is reused when its component "
-					.. "matches. Add `memo = true` to a function-component node and it bails out of "
-					.. "re-rendering while its props are shallow-equal (React.memo) — the fast path for a "
-					.. "stable subtree under a busy parent. To force the opposite (a full remount when a "
-					.. "slot represents a different logical thing), give that slot a distinct component "
-					.. "identity, since fibrous has no key prop.",
+				text = "Add `memo = true` to a function-component node and it bails out of re-rendering "
+					.. "while its props are shallow-equal to the last render (React.memo) — the fast path "
+					.. "for a stable subtree under a busy parent. It only ever SKIPS work; the fiber's own "
+					.. "state updates re-render it directly, past the bailout.",
+			},
+			{ kind = "h", text = "key" },
+			{
+				kind = "p",
+				text = "Reconciliation matches a parent's children to the previous render's fibers. A child "
+					.. "carrying a `key` is matched BY KEY (React-style), so it keeps its fiber — and its "
+					.. "hook state — even when siblings are inserted, removed, or reordered around it. A "
+					.. "child WITHOUT a key falls back to positional (index) matching. Use any stable value "
+					.. "(a reference-stable object is ideal); it also gives the cursor anchor a logical "
+					.. "identity to hold the reader's place across a relayout. See the row example below.",
+			},
+			{
+				kind = "code",
+				lines = {
+					"-- keyed list: inserting `new` keeps each row's fiber + state,",
+					"-- and paints the move rather than re-rendering everything below it",
+					"local children = {}",
+					"for _, item in ipairs(items) do",
+					"  children[#children + 1] =",
+					"    { comp = Row, key = item.id, props = { item = item } }",
+					"end",
+					"return { comp = ui.col, props = {}, children = children }",
+				},
 			},
 		},
 	},

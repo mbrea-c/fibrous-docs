@@ -33,15 +33,13 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		local mount = require("fibrous.inline.mount")
 
 		vim.schedule(function()
-			-- follow: focus-follows-mouse — the web client streams pointer motion
-			-- as nvim_input_mouse "move" events, and fibrous moves the cursor to
-			-- the pointer (hover, and traversal into inputs, ride along). A
-			-- browser page is where FFM feels native; keyboard-first terminal
-			-- users would find the cursor yanked around, so it stays opt-in there.
+			-- Mouse: clicks activate (the default); focus-follows-mouse is OFF —
+			-- streaming pointer motion as cursor moves yanked the view around, so
+			-- the cursor is driven by clicks and the keyboard, not hover.
 			local handle = mount.window(
 				require("webapp"),
 				{},
-				{ winid = vim.api.nvim_get_current_win(), mode = "scroll", mouse = { follow = true } }
+				{ winid = vim.api.nvim_get_current_win(), mode = "scroll", mouse = { follow = false } }
 			)
 			handle.focus()
 		end)
