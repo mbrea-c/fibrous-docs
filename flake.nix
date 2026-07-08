@@ -36,25 +36,25 @@
       packages = forAllSystems (
         system: pkgs: rec {
           # The site's bundled font, so the grid never depends on the
-          # visitor's system fonts. JuliaMono's raw TTFs are ~3.3 MB PER FACE
-          # (enormous glyph coverage), so each face is subset to what the site
-          # can actually show — Latin, punctuation, arrows, math, box
+          # visitor's system fonts. We ship the Nerd Font Iosevka MONO faces
+          # (single-cell advances — the right thing for a grid renderer — and
+          # they carry the powerline glyphs). Each face is subset to what the
+          # site can actually show — Latin, punctuation, arrows, math, box
           # drawing/blocks/shapes (fibrous borders + the figlet banner),
-          # powerline — and recompressed as woff2: ~13 MB of TTF becomes a few
-          # hundred KB. Glyphs outside the subset fall back per-glyph to the
-          # renderer's monospace stack, which is exactly today's baseline.
-          # (Swap julia-mono for e.g. iosevka-bin here to change the face.)
+          # powerline — and recompressed as woff2. Glyphs outside the subset
+          # fall back per-glyph to the renderer's monospace stack.
+          # (Swap nerd-fonts.iosevka / the faces here to change the face.)
           webfont =
             let
-              src = "${pkgs.julia-mono}/share/fonts/truetype";
+              src = "${pkgs.nerd-fonts.iosevka}/share/fonts/truetype/NerdFonts/Iosevka";
               ranges = "U+0000-00FF,U+0100-017F,U+2000-206F,U+2190-21FF,U+2200-22FF,U+2500-257F,U+2580-259F,U+25A0-25FF,U+E0A0-E0B3";
               faces = [
-                "JuliaMono-Regular"
-                "JuliaMono-Bold"
-                "JuliaMono-RegularItalic"
+                "IosevkaNerdFontMono-Regular"
+                "IosevkaNerdFontMono-Bold"
+                "IosevkaNerdFontMono-Italic"
               ];
             in
-            pkgs.runCommandLocal "juliamono-webfont"
+            pkgs.runCommandLocal "iosevka-webfont"
               {
                 nativeBuildInputs = [
                   (pkgs.python3.withPackages (ps: [
@@ -82,16 +82,16 @@
             initLua = ./site/init.lua;
             extraLuaDirs = [ ./site/lua ];
             font = {
-              family = "JuliaMono";
+              family = "Iosevka Nerd Font Mono";
               px = 17;
               faces = [
-                { file = "${webfont}/JuliaMono-Regular.woff2"; }
+                { file = "${webfont}/IosevkaNerdFontMono-Regular.woff2"; }
                 {
-                  file = "${webfont}/JuliaMono-Bold.woff2";
+                  file = "${webfont}/IosevkaNerdFontMono-Bold.woff2";
                   weight = "bold";
                 }
                 {
-                  file = "${webfont}/JuliaMono-RegularItalic.woff2";
+                  file = "${webfont}/IosevkaNerdFontMono-Italic.woff2";
                   style = "italic";
                 }
               ];
