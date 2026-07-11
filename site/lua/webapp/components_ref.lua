@@ -416,14 +416,15 @@ return function()
     "return x + 1",
     "```",
     "",
-    "Inline math $E = mc^2$, and display math that nests:",
+    "Inline math $E = mc^2$, fonts $\\mathbf{v} \\cdot \\hat{n}$, and",
+    "display math with sized fences that nests:",
     "",
     "$$",
     "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
     "$$",
     "",
     "$$",
-    "\\frac{1}{1 + \\frac{1}{1 + \\frac{1}{x}}}",
+    "\\left| \\frac{1}{1 + \\frac{1}{1 + \\frac{1}{x}}} \\right|",
     "$$",
   }, "\n")
   return { comp = ui.markdown, props = { text = src } }
