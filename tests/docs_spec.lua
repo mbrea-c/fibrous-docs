@@ -55,7 +55,7 @@ describe("webapp docs shell", function()
     local handle = mount_docs()
     local text = page_text(handle)
 
-    for _, tab in ipairs({ "Home", "Components", "API" }) do
+    for _, tab in ipairs({ "Home", "Components", "API", "Architecture" }) do
       assert.truthy(text:find(tab, 1, true), "missing nav tab: " .. tab)
     end
     -- Home is the default page: its banner is on screen
@@ -151,6 +151,27 @@ describe("webapp docs shell", function()
     local text = page_text(handle)
     assert.truthy(text:find("on_key", 1, true), "on_key not documented")
     assert.truthy(text:find("role", 1, true), "role not documented")
+
+    handle.unmount()
+  end)
+
+  it("the Architecture tab walks the rendering pipeline stage by stage", function()
+    local handle = mount_docs()
+
+    press(handle, "Architecture")
+    local text = page_text(handle)
+    -- the side-nav lists the pipeline stages, high level first
+    for _, section in ipairs({ "Overview", "Reactive core", "Layout", "Trigger graph" }) do
+      assert.truthy(text:find(section, 1, true), "Architecture side-nav missing section: " .. section)
+    end
+    -- the default (Overview) section shows the pipeline and the one-tree/N-buffers idea
+    assert.truthy(text:find("build -> layout", 1, true), "pipeline diagram not shown on Overview")
+
+    -- selecting another stage swaps the content pane
+    press(handle, "Subwindows")
+    local sub = page_text(handle)
+    assert.truthy(sub:find("render", 1, true), "render policy not documented on the subwindows stage")
+    assert.truthy(sub:find("mirror", 1, true), "the mirror mechanism not documented")
 
     handle.unmount()
   end)

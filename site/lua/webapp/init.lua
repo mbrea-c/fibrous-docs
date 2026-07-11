@@ -18,6 +18,7 @@ local PAGES = {
 	{ id = "home", label = "Home", comp = require("webapp.home") },
 	{ id = "components", label = "Components", comp = require("webapp.components_page") },
 	{ id = "api", label = "API", comp = require("webapp.api_page") },
+	{ id = "architecture", label = "Architecture", comp = require("webapp.architecture_page") },
 }
 
 local by_id = {}

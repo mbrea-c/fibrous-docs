@@ -6,6 +6,12 @@
 --
 -- LAYOUT_PROPS below are the flex props every node accepts; each entry lists
 -- only the props unique to it, then references the shared layout/style tables.
+--
+-- `group` sorts the entry in the side-nav: "primitive" (a host leaf the
+-- reconciler/layout/flush machinery operate on directly) or "builtin" (an
+-- ordinary function component that desugars to primitives by remapping props).
+-- `stateful = true` flags a builtin that owns hook state / effects (animation)
+-- rather than being a pure prop remap — surfaced as a callout on its doc.
 
 -- The flex/layout props every node accepts (col, row, and every leaf).
 local LAYOUT_PROPS = {
@@ -48,6 +54,7 @@ return {
 	{
 		id = "col",
 		name = "col",
+		group = "primitive",
 		summary = "A vertical flex container: stacks its children top-to-bottom. The layout "
 			.. "primitive everything nests in — gap spaces the children, align positions them "
 			.. "across the axis, justify distributes them along it, grow shares leftover space.",
@@ -84,6 +91,7 @@ end
 	{
 		id = "row",
 		name = "row",
+		group = "primitive",
 		summary = "A horizontal flex container: lays its children left-to-right. Same props as "
 			.. "col, different axis — use grow to let one child absorb the leftover width.",
 		props = {
@@ -118,6 +126,7 @@ end
 	{
 		id = "text",
 		name = "text",
+		group = "primitive",
 		summary = "The ONE host leaf every visible component ultimately renders to. Its `text` "
 			.. "may be a plain string OR a rich-text span list — bare strings and { \"chunk\", "
 			.. "hl = \"Group\" } tables mixed together. label and paragraph are thin wrappers "
@@ -158,6 +167,7 @@ end
 	{
 		id = "label",
 		name = "label",
+		group = "builtin",
 		summary = "A single, non-wrapping line of text (wrap = false over the text leaf). Use it "
 			.. "for headings, keys, chips — anything that should stay on one line and clip rather "
 			.. "than reflow.",
@@ -192,6 +202,7 @@ end
 	{
 		id = "paragraph",
 		name = "paragraph",
+		group = "builtin",
 		summary = "Wrapping body text (wrap = true over the text leaf). Give it a width (or let a "
 			.. "flex parent size it) and it reflows to fit — the workhorse for prose.",
 		props = {
@@ -225,6 +236,7 @@ end
 	{
 		id = "button",
 		name = "button",
+		group = "builtin",
 		summary = "A pressable chip: label text framed by bracket borders from its theme, fired "
 			.. "by <CR> or a click on the cursor's hit-map. Shrink-wraps by default (align_self = "
 			.. "\"start\"); pass a width or align_self = \"stretch\" for a full-width button.",
@@ -263,6 +275,7 @@ end
 	{
 		id = "checkbox",
 		name = "checkbox",
+		group = "builtin",
 		summary = "A toggle row: a mark glyph + label, flipped by <Space>/<CR>/click. The checked "
 			.. "and unchecked marks come from the theme and override per instance via the `marks` "
 			.. "prop (bare strings or spans).",
@@ -303,6 +316,8 @@ end
 	{
 		id = "animation",
 		name = "animation",
+		group = "builtin",
+		stateful = true,
 		summary = "Time-driven text: give it a duration and a value(progress) function and it runs "
 			.. "the timer, diffs the frames and tears the timer down on unmount. progress loops in "
 			.. "[0, 1) — elapsed time modulo duration. A frame only writes when the rendered value "
@@ -349,13 +364,15 @@ end
 	{
 		id = "text_input",
 		name = "text_input",
+		group = "primitive",
 		summary = "An editable single-line (or multi-line) field: a real Neovim buffer spliced "
 			.. "into the layout as a float. The cursor glides over it until you enter it (<CR>/i/"
-			.. "click); then it edits like any buffer. Edits report through on_change; <CR> submits.",
+			.. "click); then it edits like any buffer. Edits report through on_change; NORMAL-mode "
+			.. "<CR> submits (insert-mode <CR> is a newline, so it composes multi-line).",
 		props = {
 			{ "value", "string", "initial seed text (the buffer is the source of truth after)" },
 			{ "on_change", "fun(value)", "fired on every edit (TextChanged/TextChangedI)" },
-			{ "on_submit", "fun(value)", "fired on <CR>; without it insert <CR> is a plain newline" },
+			{ "on_submit", "fun(value)", "fired on NORMAL-mode <CR>; insert <CR> is always a plain newline" },
 			{ "clear_on_submit", "boolean", "empty the field after on_submit" },
 			{ "insert_on_click", "boolean", "click enters insert mode (vs. normal-mode focus)" },
 		},
@@ -364,10 +381,11 @@ end
 		example = {
 			name = "ref_text_input",
 			title = "text_input",
-			intro = "Type into it and press <CR> — on_submit echoes the value above and clears.",
+			intro = "Type into it, press <Esc> for normal mode, then <CR> — on_submit echoes the value above and clears.",
 			details = "Move the cursor into the field to focus it (its border brightens), edit "
-				.. "like any buffer, leave by stepping out at an edge. It is a genuine editable "
-				.. "buffer, so all of vim works inside it.",
+				.. "like any buffer, leave by stepping out at an edge or <Esc>. NORMAL-mode <CR> "
+				.. "submits; insert-mode <CR> is a plain newline. It is a genuine editable buffer, "
+				.. "so all of vim works inside it.",
 			code = [==[
 local ui = require("fibrous.inline.components")
 
@@ -396,6 +414,7 @@ end
 	{
 		id = "raw_buffer",
 		name = "raw_buffer",
+		group = "primitive",
 		summary = "Embed an EXISTING, caller-owned buffer as a widget (an editor, a terminal, a "
 			.. "preview). Unlike text_input, fibrous does not own the buffer — you create and free "
 			.. "it. render = \"focus\" transcribes the buffer's highlights onto the page and only "
@@ -445,6 +464,7 @@ end
 	{
 		id = "container",
 		name = "container",
+		group = "primitive",
 		summary = "A container boundary: its children render into the container's OWN buffer, "
 			.. "shown in a float over the boundary box — one fiber tree, N buffers. With a height "
 			.. "(or grow) it is a viewport: mode = \"scroll\" (default) lets the content grow and "
@@ -457,7 +477,7 @@ end
 			{ "scroll_x", "boolean", "false pins horizontal scroll (leftcol 0) — e.g. a vertical-only transcript" },
 			{ "scroll_y", "boolean", "false pins vertical scroll (topline 1)" },
 			{ "keys", "string[]", "normal-mode keys routed to descendants' on_key handlers" },
-			{ "anchor", "boolean", "keep the cursor on its entry across relayout; default true (false opts out)" },
+			{ "anchor", "boolean", "keep your place across relayout (cursor when focused, view when not); default true (false opts out)" },
 		},
 		layout = true,
 		style = true,

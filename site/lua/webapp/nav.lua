@@ -47,13 +47,34 @@ function M.tabs(_, props)
 	}
 end
 
--- The docs pages' left column: a vertical list of entries, one per doc.
+-- A non-selectable section header row: dim, uppercase-feeling divider that
+-- groups the entries below it. `first` drops the top margin on the leading one.
+--- @param text string
+--- @param first boolean
+--- @return table node
+local function header(text, first)
+	return {
+		comp = ui.label,
+		props = {
+			text = text,
+			style = { text_hl = "Title", margin = { top = first and 0 or 1 } },
+		},
+	}
+end
+
+-- The docs pages' left column: a vertical list of entries, one per doc. An item
+-- with a `header` field renders as a non-selectable section title instead of a
+-- link, so callers can group the list (e.g. Primitives vs Builtins).
 --- @param _ table ctx (unused)
 --- @param props { items: table[], active: string, on_select: fun(id: string), width?: integer }
 function M.sidenav(_, props)
 	local rows = {}
-	for _, entry in ipairs(props.items) do
-		rows[#rows + 1] = item(entry, entry.id == props.active, props.on_select)
+	for i, entry in ipairs(props.items) do
+		if entry.header then
+			rows[#rows + 1] = header(entry.header, i == 1)
+		else
+			rows[#rows + 1] = item(entry, entry.id == props.active, props.on_select)
+		end
 	end
 	return {
 		comp = ui.col,

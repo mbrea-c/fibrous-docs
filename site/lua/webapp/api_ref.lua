@@ -40,7 +40,7 @@ return {
 					{ "mode", "string", "\"fixed\" (default) | \"scroll\"" },
 					{ "mouse", "table|false", "{ activate, follow }; false disables mouse maps" },
 					{ "keys", "string[]", "normal-mode keys routed to the hovered component's on_key" },
-					{ "anchor", "boolean", "keep the cursor on its entry across relayout; default true (false opts out)" },
+					{ "anchor", "boolean", "keep your place across relayout (cursor when focused, view when not); default true (false opts out)" },
 					{ "zindex", "integer", "root float z-index; default 10 (below nvim's float default)" },
 				},
 			},
@@ -60,7 +60,7 @@ return {
 					{ "mouse", "table|false", "{ activate, follow }; false disables mouse maps" },
 					{ "border", "string|string[]", "nvim_open_win border for the root float" },
 					{ "backdrop", "bool|integer", "dim the editor behind the app (modal effect)" },
-					{ "anchor", "boolean", "keep the cursor on its entry across relayout; default true (false opts out)" },
+					{ "anchor", "boolean", "keep your place across relayout (cursor when focused, view when not); default true (false opts out)" },
 					{ "zindex", "integer", "root float z-index; default 50" },
 				},
 			},
@@ -228,21 +228,84 @@ return {
 			{
 				kind = "p",
 				text = "Focus follows the cursor too: gliding hjkl over an embedded editor (text_input / "
-					.. "raw_buffer) passes straight over it; <CR>, i, or a click ENTERS it, and an edge "
-					.. "motion steps back out. _focus style keys apply while a node or its subwindow holds "
-					.. "focus. See the Home page's \"Two focus policies\" example.",
+					.. "raw_buffer) passes straight over it; <CR>, i, a visual key (v/V/<C-v>), or a click "
+					.. "ENTERS it (an edit operator like dd/cw over an editable one enters AND edits), and an "
+					.. "edge motion or <Esc> steps back out. _focus style keys apply while a node or its "
+					.. "subwindow holds focus. See the Home page's \"Two focus policies\" example.",
 			},
 			{ kind = "h", text = "cursor anchor" },
 			{
 				kind = "p",
 				text = "A relayout — a width resize rewraps every line, an insert shifts the tail — would "
-					.. "otherwise leave the cursor on its old absolute row, now holding different content "
-					.. "(\"swimming\"). While the surface is focused, fibrous instead keeps the cursor on the "
-					.. "same entry across the relayout, holding its screen row so the view doesn't jump: it "
-					.. "tracks the entry by `key` (reorder-stable) or, for keyless UIs, by the node's fiber "
-					.. "(resize-stable). It follows your own cursor moves AND scrolling, so it only ever "
-					.. "corrects a relayout — it never fights the wheel. On by default; pass `anchor = false` "
-					.. "to the mount (or a container) to opt out.",
+					.. "otherwise leave the view on its old absolute rows, now holding different content "
+					.. "(\"swimming\"). fibrous instead keeps the reader's place across the relayout: it tracks "
+					.. "the entry at a REFERENCE ROW — the cursor's entry when the cursor is on-screen, else "
+					.. "the top of the viewport — by `key` (reorder-stable) or, for keyless UIs, by the node's "
+					.. "fiber (resize-stable), and holds its screen row so nothing jumps. A FOCUSED surface "
+					.. "also moves the cursor back onto its entry; an UNFOCUSED one holds only the view, leaving "
+					.. "the cursor to the app's own logic (e.g. a follow-to-bottom). It follows your own cursor "
+					.. "moves AND scrolling, so it only ever corrects a relayout — it never fights the wheel. On "
+					.. "by default; pass `anchor = false` to the mount (or a container) to opt out.",
+			},
+			{ kind = "h", text = "fibrous.targets: jump-to-widget" },
+			{
+				kind = "p",
+				text = "`require(\"fibrous.targets\").targets(opts?)` returns every interactive element "
+					.. "currently ON SCREEN, across ALL live mounts and their windows/floats, as pure "
+					.. "geometry. Because the cursor IS the pointer, \"jump to a widget\" is just \"move the "
+					.. "cursor to a cell\", so this composes directly with flash.nvim (or any label-jump "
+					.. "plugin): each entry is shaped like a flash match. Every mount auto-registers on "
+					.. "creation and deregisters on teardown; elements resolve to whichever window shows them "
+					.. "now — a live container float in its own coords, an unfocused (mirrored) input as a "
+					.. "parent cell — and off-screen ones are filtered out.",
+			},
+			{
+				kind = "p",
+				text = "Because the registry is GLOBAL, this is a keymap the USER sets once, not something "
+					.. "an app wires up: bind the recipe below to a global key and EVERY fibrous UI — this "
+					.. "one, weave, any third-party plugin — becomes flash-navigable for free, with no "
+					.. "cooperation from the app. Apps just render widgets; navigation comes along for the ride.",
+			},
+			{
+				kind = "table",
+				title = "each target",
+				rows = {
+					{ "winid", "integer", "the window currently displaying the element" },
+					{ "pos", "{ row, col }", "1-based row, 0-based byte col (nvim/flash convention)" },
+					{ "end_pos", "{ row, col }", "the element's extent, for a span label" },
+					{ "kind", "string", "\"button\" | \"checkbox\" | \"text_input\" | \"raw_buffer\" | …" },
+					{ "role", "string?", "the fibrous role, when the element has one" },
+				},
+			},
+			{
+				kind = "p",
+				text = "`opts` filters: `winid` (scope to one window — flash's matcher is per-window), "
+					.. "`kinds` (a list of kinds to keep), and `predicate` (an arbitrary fun(t) -> boolean).",
+			},
+			{
+				kind = "code",
+				lines = {
+					"-- flash.nvim recipe: label + jump to every fibrous widget on screen.",
+					"-- wrap=true labels matches BEFORE the cursor too (else forward-only in",
+					"-- the current window); let flash's default labeler assign labels (don't",
+					"-- set them here, or they collide across windows).",
+					"require(\"flash\").jump({",
+					"  search  = { multi_window = true, wrap = true, incremental = false, max_length = 0 },",
+					"  matcher = function(win)",
+					"    local Pos = require(\"flash.search.pos\")",
+					"    local out = {}",
+					"    for _, t in ipairs(require(\"fibrous.targets\").targets({ winid = win })) do",
+					"      out[#out + 1] = { win = win, pos = Pos(t.pos), end_pos = Pos(t.end_pos) }",
+					"    end",
+					"    return out",
+					"  end,",
+					"})",
+					"-- flash jumps the cursor to the chosen widget; <CR> then activates it",
+					"-- through the ordinary interaction layer (hover follows the cursor).",
+					"-- NB bind this to a <C-...> key, NOT a <Space>-leader chord: fibrous",
+					"-- maps <Space>/<CR>/<Tab>/i/a/d/c/v… buffer-locally, so a <Space> leader",
+					"-- is swallowed inside a fibrous window.",
+				},
 			},
 		},
 	},
