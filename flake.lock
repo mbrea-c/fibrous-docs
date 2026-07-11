@@ -3,16 +3,32 @@
     "fibrous": {
       "flake": false,
       "locked": {
-        "lastModified": 1783773525,
-        "narHash": "sha256-+Gm5fjjxncv45JQaXC5DLx+7qxIAlpOOsBc44EbLIFk=",
+        "lastModified": 1783776652,
+        "narHash": "sha256-vLaObdIqu5ALnPaRXY3uFhD2cohKEQCQWdgN25Kh8EE=",
         "owner": "mbrea-c",
         "repo": "fibrous.nvim",
-        "rev": "7cda07a6e850171aea7fb94c54fa23f95be5e5c7",
+        "rev": "a745099558fe84e97c8dda1c28e3ab9b1f61f82e",
         "type": "github"
       },
       "original": {
         "owner": "mbrea-c",
         "repo": "fibrous.nvim",
+        "type": "github"
+      }
+    },
+    "flash": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783684366,
+        "narHash": "sha256-1v2+iq4/TnJq37iiGedIKFf6PxlTHQac8RXECZ2HYdM=",
+        "owner": "folke",
+        "repo": "flash.nvim",
+        "rev": "b6346946d10d07998efee029fb0f7a593806d0cd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "folke",
+        "repo": "flash.nvim",
         "type": "github"
       }
     },
@@ -53,6 +69,7 @@
     "root": {
       "inputs": {
         "fibrous": "fibrous",
+        "flash": "flash",
         "nixpkgs": [
           "nvim-wasm-core",
           "nixpkgs"

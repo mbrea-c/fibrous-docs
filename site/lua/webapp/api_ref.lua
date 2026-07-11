@@ -271,8 +271,8 @@ return {
 				title = "each target",
 				rows = {
 					{ "winid", "integer", "the window currently displaying the element" },
-					{ "pos", "{ row, col }", "1-based row, 0-based byte col (nvim/flash convention)" },
-					{ "end_pos", "{ row, col }", "the element's extent, for a span label" },
+					{ "pos", "{ row, col }", "the widget's top-left: 1-based row, 0-based byte col (nvim/flash convention)" },
+					{ "end_pos", "{ row, col }", "same row as pos, at the widget's right edge (a single-line span; flash is line-oriented, so a match straddling rows mislabels)" },
 					{ "kind", "string", "\"button\" | \"checkbox\" | \"text_input\" | \"raw_buffer\" | …" },
 					{ "role", "string?", "the fibrous role, when the element has one" },
 				},

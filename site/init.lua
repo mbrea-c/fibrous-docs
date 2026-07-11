@@ -32,6 +32,30 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
 		local mount = require("fibrous.inline.mount")
 
+		-- flash.nvim jump-to-widget: <C-.> labels every interactive fibrous
+		-- element on screen (via the global fibrous.targets registry) and jumps
+		-- the cursor to the one you pick, so you can reach any button/input/link
+		-- without hjkl. This is a plain user keybind; the page does nothing to
+		-- enable it. flash is a pack/start plugin, so require it lazily here.
+		pcall(function()
+			require("flash").setup()
+		end)
+		vim.keymap.set({ "n", "x" }, "<C-.>", function()
+			require("flash").jump({
+				-- wrap=true labels matches before the cursor too (else forward-only
+				-- in the current window); let flash's default labeler assign labels.
+				search = { multi_window = true, wrap = true, incremental = false, max_length = 0 },
+				matcher = function(win)
+					local Pos = require("flash.search.pos")
+					local out = {}
+					for _, t in ipairs(require("fibrous.targets").targets({ winid = win })) do
+						out[#out + 1] = { win = win, pos = Pos(t.pos), end_pos = Pos(t.end_pos) }
+					end
+					return out
+				end,
+			})
+		end, { desc = "Flash to fibrous widget" })
+
 		vim.schedule(function()
 			-- Mouse: clicks activate (the default); focus-follows-mouse is OFF —
 			-- streaming pointer motion as cursor moves yanked the view around, so

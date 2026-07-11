@@ -9,9 +9,10 @@ local playground = require("webapp.playground")
 local examples = require("webapp.examples")
 
 local PITCH = "A React-style declarative UI framework for Neovim. This page is itself a "
-	.. "fibrous app, rendered by a real Neovim compiled to WebAssembly — scroll with j/k or "
+	.. "fibrous app, rendered by a real Neovim compiled to WebAssembly. Scroll with j/k or "
 	.. "the mouse wheel, press things with <CR> or a click, and edit the examples live. "
-	.. "Browse the Components and API tabs above for the full reference."
+	.. "Press <C-.> to flash-jump to any interactive element on screen (fibrous.targets "
+	.. "feeding flash.nvim). Browse the Components and API tabs above for the full reference."
 
 return function()
 	local children = {

@@ -12,6 +12,13 @@
       url = "github:mbrea-c/fibrous.nvim";
       flake = false;
     };
+    # flash.nvim rides along as a pack/start plugin so the site can demo
+    # jump-to-widget navigation (site/init.lua binds <C-.> to a flash matcher
+    # fed by fibrous.targets). Just plugin source, so flake = false.
+    flash = {
+      url = "github:folke/flash.nvim";
+      flake = false;
+    };
     nixpkgs.follows = "nvim-wasm-core/nixpkgs";
   };
 
@@ -21,6 +28,7 @@
       nixpkgs,
       nvim-wasm-core,
       fibrous,
+      flash,
     }:
     let
       systems = [
@@ -78,7 +86,10 @@
           # fibrous (with its vendored nui) rides along as a pack/start plugin
           # inside the in-browser Neovim; site/init.lua mounts the landing UI.
           site = nvim-wasm-core.lib.${system}.mkNvimWasmWeb {
-            plugins = [ fibrous ];
+            plugins = [
+              fibrous
+              flash
+            ];
             initLua = ./site/init.lua;
             extraLuaDirs = [ ./site/lua ];
             font = {
@@ -150,7 +161,8 @@
               trap 'rm -rf "$pack"' EXIT
               mkdir -p "$pack/pack/fibrous/start"
               ln -s "$fib" "$pack/pack/fibrous/start/fibrous"
-              echo "fibrous-docs native (fibrous: $fib) — :qa! to exit"
+              ln -s "${flash}" "$pack/pack/fibrous/start/flash"
+              echo "fibrous-docs native (fibrous: $fib); :qa! to exit"
               nvim -i NONE \
                 --cmd "set packpath^=$pack" \
                 --cmd "lua package.path = '$docs/site/lua/?.lua;$docs/site/lua/?/init.lua;' .. package.path" \
