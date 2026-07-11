@@ -196,6 +196,22 @@ return function()
     "```lua",
     "return 41 + 1",
     "```",
+    "",
+    "And LaTeX math, inline $a^2 + b^2 = c^2$ and display, which nests:",
+    "",
+    "$$",
+    "\\phi = \\frac{1 + \\sqrt{5}}{2}",
+    "$$",
+    "",
+    "$$",
+    "\\frac{1}{1 + \\frac{1}{1 + \\frac{1}{x}}}",
+    "$$",
+    "",
+    "Big operators grow with their limits stacked:",
+    "",
+    "$$",
+    "\\sum_{k=1}^{n} \\frac{1}{k^2} = \\frac{\\pi^2}{6}",
+    "$$",
   }, "\n")
   return { comp = ui.markdown, props = { text = src } }
 end

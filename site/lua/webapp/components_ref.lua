@@ -368,16 +368,18 @@ end
 		stateful = true,
 		summary = "Render markdown source as rich, interactive blocks: headings, paragraphs with "
 			.. "inline emphasis/strong/code, links, lists (including GFM task lists), blockquotes, "
-			.. "fenced code, thematic breaks, and GFM tables. A pure-Lua parser (no treesitter) feeds "
-			.. "a format-neutral document AST, which the shared renderer turns into fibrous vnodes; "
-			.. "inline marks map onto the standard @markup.* groups and LINKS become interactive spans "
-			.. "(hover, click, and flash-jump, firing on_link). Stateful: it caches the parsed AST per "
-			.. "source on a ref, so re-renders and resizes never re-parse.",
+			.. "fenced code, thematic breaks, GFM tables, and LaTeX math ($ inline, $$ display, "
+			.. "rendered as stacked Unicode). A pure-Lua parser (no treesitter) feeds a format-neutral "
+			.. "document AST, which the shared renderer turns into fibrous vnodes; inline marks map onto "
+			.. "the standard @markup.* groups and LINKS become interactive spans (hover, click, and "
+			.. "flash-jump, firing on_link). Fenced code is treesitter-highlighted where a parser is "
+			.. "available (plain in WASM). Stateful: it caches the parsed AST per source on a ref, so "
+			.. "re-renders and resizes never re-parse.",
 		props = {
 			{ "text", "string", "the markdown source" },
 			{ "on_link", "fun(url)", "called when a link is activated (<CR>/click); defaults to vim.ui.open" },
 			{ "live", "boolean", "while true (still streaming) render the raw text plain and defer the parse" },
-			{ "highlight", "fun(text, lang)", "optional fenced-code highlighter → spans; default renders code plain" },
+			{ "highlight", "fun(text, lang)", "override the default treesitter fenced-code highlighter" },
 		},
 		layout = true,
 		style = true,
@@ -413,6 +415,16 @@ return function()
     "local x = 41",
     "return x + 1",
     "```",
+    "",
+    "Inline math $E = mc^2$, and display math that nests:",
+    "",
+    "$$",
+    "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
+    "$$",
+    "",
+    "$$",
+    "\\frac{1}{1 + \\frac{1}{1 + \\frac{1}{x}}}",
+    "$$",
   }, "\n")
   return { comp = ui.markdown, props = { text = src } }
 end
