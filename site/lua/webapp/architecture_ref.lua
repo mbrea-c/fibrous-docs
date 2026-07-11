@@ -11,51 +11,8 @@ return {
 	{
 		id = "overview",
 		name = "Overview",
-		blocks = {
-			{
-				kind = "p",
-				text = "fibrous is two layers. A host-agnostic REACTIVE CORE (React in miniature: "
-					.. "components, fibers, hooks, reconciliation) decides WHAT the UI is; a concrete "
-					.. "INLINE HOST renders that into Neovim buffers. They meet at one seam -- an injected "
-					.. "HostConfig -- so the core never touches Neovim and is pure, fast Lua you can unit-test "
-					.. "outside an editor.",
-			},
-			{
-				kind = "p",
-				text = "There is ONE fiber tree for the whole app: it owns all state, hooks and "
-					.. "reconciliation. The inline host then splits it at every `container` boundary into a "
-					.. "TREE OF FLUSH TARGETS. Each target -- the root, plus one per container -- is what maps "
-					.. "to a single layout tree, a single painted canvas, and a single buffer shown in its own "
-					.. "float. So the shape is one fiber tree, N buffers, not one buffer.",
-			},
-			{
-				kind = "code",
-				lines = {
-					"ONE fiber tree            state, hooks, reconciliation",
-					"     |",
-					"     |  split at `container` boundaries",
-					"     v",
-					"tree of flush targets     root + one per container",
-					"     |",
-					"     |  each target, parent-first:",
-					"     v",
-					"build -> layout -> paint -> splice -> its OWN buffer (+ float)",
-					"                                          |",
-					"                                          v  on_flush(damage)",
-					"                              window + interaction layer",
-					"                              (mount, subwin, interact)",
-				},
-			},
-			{
-				kind = "p",
-				text = "Think of it as two clocks. RENDERS are driven by state: a use_state write "
-					.. "re-renders just that component's subtree. The WINDOW AND INTERACTION LAYER is driven "
-					.. "by flushes and user events: after each commit the host emits DAMAGE, and mount / "
-					.. "subwin / interact react to it -- repositioning floats, re-mirroring, re-anchoring the "
-					.. "cursor, re-evaluating hover. The two never call into each other directly; the HostConfig "
-					.. "and the on_flush damage are the only boundaries between them.",
-			},
-		},
+		-- Body kept as markdown (see site/lua/webapp/docs/), rendered by ui.markdown.
+		md = "architecture/overview.md",
 	},
 
 	{

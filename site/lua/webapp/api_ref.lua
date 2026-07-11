@@ -188,6 +188,28 @@ return {
 					.. "leaves alike — accepts these; gap only applies to containers (col/row/container).",
 			},
 			{ kind = "table", title = "layout props", rows = components_ref.LAYOUT_PROPS },
+			{ kind = "h", text = "rich text: span lists + SpanStyle" },
+			{
+				kind = "p",
+				text = "A text / label / paragraph `text` may be a LIST of spans: bare strings, or "
+					.. '{ "chunk", style = SpanStyle, on_click = fn, role = "link" } tables. SpanStyle is the '
+					.. "text-appearance subset of the style vocabulary (text_hl plus a _hover override), "
+					.. "because a span has no box. on_click makes the span INTERACTIVE: it fires on "
+					.. "<CR>/<Space>/click when the cursor is on it (the whole span, even when it wraps), "
+					.. "hovers via _hover, and shows up in fibrous.targets so flash jumps to it. This is "
+					.. "exactly how the markdown widget renders links.",
+			},
+			{
+				kind = "code",
+				lines = {
+					"{ comp = ui.paragraph, props = { text = {",
+					'  "see the ",',
+					'  { "docs", style = { text_hl = "@markup.link" }, role = "link",',
+					'    on_click = function() vim.ui.open("https://x") end },',
+					'  " for more",',
+					"} } }",
+				},
+			},
 		},
 	},
 

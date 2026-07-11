@@ -362,6 +362,65 @@ end
 	},
 
 	{
+		id = "markdown",
+		name = "markdown",
+		group = "builtin",
+		stateful = true,
+		summary = "Render markdown source as rich, interactive blocks: headings, paragraphs with "
+			.. "inline emphasis/strong/code, links, lists (including GFM task lists), blockquotes, "
+			.. "fenced code, thematic breaks, and GFM tables. A pure-Lua parser (no treesitter) feeds "
+			.. "a format-neutral document AST, which the shared renderer turns into fibrous vnodes; "
+			.. "inline marks map onto the standard @markup.* groups and LINKS become interactive spans "
+			.. "(hover, click, and flash-jump, firing on_link). Stateful: it caches the parsed AST per "
+			.. "source on a ref, so re-renders and resizes never re-parse.",
+		props = {
+			{ "text", "string", "the markdown source" },
+			{ "on_link", "fun(url)", "called when a link is activated (<CR>/click); defaults to vim.ui.open" },
+			{ "live", "boolean", "while true (still streaming) render the raw text plain and defer the parse" },
+			{ "highlight", "fun(text, lang)", "optional fenced-code highlighter → spans; default renders code plain" },
+		},
+		layout = true,
+		style = true,
+		example = {
+			name = "ref_markdown",
+			title = "markdown",
+			intro = "A markdown document rendered as rich blocks; the link is a real interactive span.",
+			details = "The parser is pure Lua (it runs here in WASM, where treesitter cannot), producing "
+				.. "a neutral document AST that the renderer lowers to the same primitives every other "
+				.. "component uses. Links ride the interactive-span machinery, so they hover, click, and "
+				.. "flash-jump like any widget.",
+			code = [==[
+local ui = require("fibrous.inline.components")
+
+return function()
+  local src = table.concat({
+    "# Markdown widget",
+    "",
+    "Render **markdown** *source* as rich blocks, with `inline code`,",
+    "a [clickable link](https://example.com), and lists:",
+    "",
+    "- a bullet point",
+    "- [x] a finished task",
+    "- [ ] a pending task",
+    "",
+    "> Blockquotes, tables and fenced code all render too.",
+    "",
+    "| lang | speed |",
+    "| :--- | ----: |",
+    "| lua  | fast  |",
+    "",
+    "```lua",
+    "local x = 41",
+    "return x + 1",
+    "```",
+  }, "\n")
+  return { comp = ui.markdown, props = { text = src } }
+end
+]==],
+		},
+	},
+
+	{
 		id = "text_input",
 		name = "text_input",
 		group = "primitive",

@@ -160,6 +160,49 @@ end
   },
 
   {
+    name = "markdown",
+    title = "Markdown, rendered live",
+    intro = "ui.markdown parses markdown in pure Lua — no treesitter, which is why it runs "
+      .. "right here in the browser — and renders it as fibrous blocks. The link is a real "
+      .. "interactive span: move onto it and press <CR>, or click it. Edit the source and reload.",
+    details = "A two-stage pipeline: a pure-Lua parser turns the source into a format-neutral "
+      .. "document AST, and the shared renderer lowers that into the same primitives every other "
+      .. "component uses. Inline marks map onto Neovim's standard @markup.* groups, and links "
+      .. "ride the interactive-span machinery (hover, click, flash-jump), so they compose with "
+      .. "the rest of fibrous instead of being a special case. A future format only needs to emit "
+      .. "the same AST to reuse all of this.",
+    code = [==[
+local ui = require("fibrous.inline.components")
+
+return function()
+  local src = table.concat({
+    "# Markdown, rendered live",
+    "",
+    "This block is **markdown** *parsed in pure Lua* and rendered as",
+    "fibrous blocks, with `inline code` and a",
+    "[clickable link](https://example.com).",
+    "",
+    "- a bullet with `code`",
+    "- [x] a finished task",
+    "- [ ] a pending task",
+    "",
+    "| feature | works |",
+    "| :------ | :---: |",
+    "| tables  | yes   |",
+    "| links   | yes   |",
+    "",
+    "> Blockquotes and fenced code render too:",
+    "",
+    "```lua",
+    "return 41 + 1",
+    "```",
+  }, "\n")
+  return { comp = ui.markdown, props = { text = src } }
+end
+]==],
+  },
+
+  {
     name = "clock",
     title = "Effects & timers",
     intro = "use_effect runs after commit and can return a cleanup — here it arms "

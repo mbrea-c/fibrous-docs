@@ -8,6 +8,7 @@ local ui = require("fibrous.inline.components")
 local nav = require("webapp.nav")
 local props_table = require("webapp.props_table")
 local architecture_ref = require("webapp.architecture_ref")
+local md_docs = require("webapp.md_docs")
 
 local by_id, items = {}, {}
 for _, section in ipairs(architecture_ref) do
@@ -47,8 +48,14 @@ return function(ctx)
 	local section = by_id[active.get()]
 
 	local content = { { comp = ui.label, props = { text = section.name, style = { text_hl = "Title" } } } }
-	for _, block in ipairs(section.blocks) do
-		content[#content + 1] = render_block(block)
+	-- A section may keep its body as a markdown file (rendered by ui.markdown) or
+	-- as the legacy block list; the former is easier for humans to edit.
+	if section.md then
+		content[#content + 1] = { comp = ui.markdown, props = { text = md_docs.load(section.md) } }
+	else
+		for _, block in ipairs(section.blocks or {}) do
+			content[#content + 1] = render_block(block)
+		end
 	end
 
 	return {
