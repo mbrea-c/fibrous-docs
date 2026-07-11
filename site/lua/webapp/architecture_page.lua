@@ -1,12 +1,11 @@
 -- The Architecture page: master/detail, same shape as the API and Components
 -- pages. A left side-nav lists the sections (webapp.architecture_ref); the
--- content pane renders that section's blocks -- paragraphs, subheadings, a small
--- props/annotations table, and static code / diagram blocks. Everything is
--- static prose (no live editors): this explains how fibrous works internally.
+-- content pane renders that section's prose, which lives as a markdown file
+-- (docs/architecture/*.md) rendered by ui.markdown. Static explanation only, no
+-- live editors: this explains how fibrous works internally.
 
 local ui = require("fibrous.inline.components")
 local nav = require("webapp.nav")
-local props_table = require("webapp.props_table")
 local architecture_ref = require("webapp.architecture_ref")
 local md_docs = require("webapp.md_docs")
 
@@ -16,47 +15,9 @@ for _, section in ipairs(architecture_ref) do
 	items[#items + 1] = { id = section.id, label = section.name }
 end
 
--- A static (non-editable) code / diagram block: a bordered col of monospace
--- lines (matches api_page's code_block).
-local function code_block(lines)
-	local rows = {}
-	for _, line in ipairs(lines) do
-		rows[#rows + 1] = { comp = ui.label, props = { text = line == "" and " " or line, style = { text_hl = "String" } } }
-	end
-	return {
-		comp = ui.col,
-		props = { gap = 0, style = { border = "rounded", padding = { x = 2 }, hl = "CursorLine" } },
-		children = rows,
-	}
-end
-
-local function render_block(block)
-	if block.kind == "p" then
-		return { comp = ui.paragraph, props = { text = block.text } }
-	elseif block.kind == "h" then
-		return { comp = ui.label, props = { text = block.text, style = { text_hl = "Title" } } }
-	elseif block.kind == "table" then
-		return { comp = props_table.table, props = { title = block.title, rows = block.rows } }
-	elseif block.kind == "code" then
-		return code_block(block.lines)
-	end
-	return { comp = ui.col, props = {} }
-end
-
 return function(ctx)
 	local active = ctx.use_state(items[1].id)
 	local section = by_id[active.get()]
-
-	local content = { { comp = ui.label, props = { text = section.name, style = { text_hl = "Title" } } } }
-	-- A section may keep its body as a markdown file (rendered by ui.markdown) or
-	-- as the legacy block list; the former is easier for humans to edit.
-	if section.md then
-		content[#content + 1] = { comp = ui.markdown, props = { text = md_docs.load(section.md) } }
-	else
-		for _, block in ipairs(section.blocks or {}) do
-			content[#content + 1] = render_block(block)
-		end
-	end
 
 	return {
 		comp = ui.row,
@@ -72,7 +33,14 @@ return function(ctx)
 					end,
 				},
 			},
-			{ comp = ui.col, props = { grow = 1, gap = 1 }, children = content },
+			{
+				comp = ui.col,
+				props = { grow = 1, gap = 1 },
+				children = {
+					{ comp = ui.label, props = { text = section.name, style = { text_hl = "Title" } } },
+					{ comp = ui.markdown, props = { text = md_docs.load(section.md) } },
+				},
+			},
 		},
 	}
 end
