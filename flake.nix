@@ -182,11 +182,31 @@
               exec nvim --headless -u NONE -i NONE -l ${self}/tests/bench.lua "$@"
             '';
           };
+
+          # The docs suite (site/lua modules + the .md content) in a fully
+          # isolated headless Neovim. fibrous defaults to the pinned flake input;
+          # point FIBROUS_PATH at a checkout to run the docs against a WIP fibrous
+          # tree (working tree, uncommitted and untracked files included):
+          #   FIBROUS_PATH=/abs/path/to/nui-reactive nix run .#test
+          # Pass a spec path to narrow: nix run .#test -- tests/home_spec.lua
+          test = pkgs.writeShellApplication {
+            name = "fibrous-docs-test";
+            runtimeInputs = [ pkgs.neovim ];
+            text = ''
+              export FIBROUS_PATH="''${FIBROUS_PATH:-${fibrous}}"
+              cd ${self}
+              exec nvim --headless -u NONE -i NONE -l tests/run.lua "$@"
+            '';
+          };
         in
         {
           default = {
             type = "app";
             program = "${serve}/bin/fibrous-docs-serve";
+          };
+          test = {
+            type = "app";
+            program = "${test}/bin/fibrous-docs-test";
           };
           native = {
             type = "app";
@@ -196,6 +216,41 @@
             type = "app";
             program = "${bench}/bin/fibrous-docs-bench";
           };
+        }
+      );
+
+      # `nix develop` drops you into a shell with the tools the entry points use:
+      # neovim (the test host and the native target) and python3 (the local
+      # static server behind `nix run`).
+      devShells = forAllSystems (
+        system: pkgs: {
+          default = pkgs.mkShell {
+            packages = [
+              pkgs.neovim
+              pkgs.python3
+            ];
+          };
+        }
+      );
+
+      # `nix flake check` runs the docs suite in the build sandbox, in a fully
+      # isolated headless Neovim (no user config, no plugins), against the PINNED
+      # fibrous. To gate against a WIP fibrous instead, add
+      # `--override-input fibrous path:../nui-reactive`.
+      checks = forAllSystems (
+        system: pkgs: {
+          tests =
+            pkgs.runCommandLocal "fibrous-docs-tests"
+              {
+                nativeBuildInputs = [ pkgs.neovim ];
+              }
+              ''
+                cp -r ${self}/. work && chmod -R +w work && cd work
+                export HOME="$TMPDIR"
+                export FIBROUS_PATH=${fibrous}
+                nvim --headless -u NONE -i NONE -l tests/run.lua
+                touch "$out"
+              '';
         }
       );
     };

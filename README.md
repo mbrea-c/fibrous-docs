@@ -2,8 +2,7 @@
 
 The [fibrous.nvim](../nui-reactive) playground site: **real, upstream Neovim —
 compiled to WebAssembly — running entirely client-side in the browser**, with
-fibrous loaded as a plugin and a fibrous-rendered landing UI. Tier 3 of the
-fibrous playground stack, built on
+fibrous loaded as a plugin and a fibrous-rendered landing UI. Built on
 [nvim-wasm-core](../nvim-wasm-core)'s `mkNvimWasmWeb` API.
 
 Everything is static files: no server-side compute, no SharedArrayBuffer, no
