@@ -435,6 +435,79 @@ end
 	},
 
 	{
+		id = "image",
+		name = "image",
+		group = "builtin",
+		stateful = true,
+		summary = "Inline images via kitty Unicode placeholders: the PNG is transmitted to the "
+			.. "terminal once and each grid cell is ordinary buffer text (U+10EEEE plus row/column "
+			.. "diacritics, the image id encoded in the cell's foreground color), so images scroll, "
+			.. "clip and layer exactly like characters — in buffers, floats, and under tmux "
+			.. "(with `allow-passthrough on`). Works on kitty and ghostty; anywhere else it degrades "
+			.. "to the `alt` text. Stateful: retain on mount / release on unmount, refcounted, so the "
+			.. "same content shown N times transmits once. Ids are content-derived, stable across "
+			.. "remounts.",
+		props = {
+			{ "b64", "string", "base64 PNG content (ipynb-style embedded newlines tolerated)" },
+			{ "data", "string", "raw PNG bytes (alternative to b64)" },
+			{ "cols/rows", "integer", "explicit size in cells; give one and the other derives from the aspect ratio" },
+			{ "max_cols/max_rows", "integer", "cap the natural size (pixel dims / cell size), aspect-preserving" },
+			{ "alt", "string", "text shown when the terminal cannot display images or the content is not a PNG" },
+		},
+		layout = true,
+		style = true,
+		example = {
+			name = "ref_image",
+			title = "image",
+			intro = "An inline image with an alt fallback — this browser playground has no kitty "
+				.. "protocol, so you see the fallback path; in kitty/ghostty the same code shows pixels.",
+			details = "The provider auto-detects (TERM/tmux passthrough/termguicolors); "
+				.. "`require(\"fibrous.image\").config` can force it. Sizing: explicit cols/rows win, "
+				.. "otherwise the PNG's pixel size divided by the terminal cell size, capped by "
+				.. "max_cols/max_rows with the aspect ratio preserved.",
+			code = [==[
+local ui = require("fibrous.inline.components")
+
+-- a real 120x80 PNG (a gradient); embedded newlines are fine, exactly as
+-- ipynb stores base64
+local png = [[
+iVBORw0KGgoAAAANSUhEUgAAAHgAAABQEAIAAAANafqdAAAAIGNIUk0AAHomAACAhAAA+gAAAIDo
+AAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRP///////wlY99wAAAAHdElNRQfqBxEVMjmJFsNM
+AAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI2LTA3LTE3VDIxOjUwOjU3KzAwOjAwjuQFjwAAACV0RVh0
+ZGF0ZTptb2RpZnkAMjAyNi0wNy0xN1QyMTo1MDo1NyswMDowMP+5vTMAAAAodEVYdGRhdGU6dGlt
+ZXN0YW1wADIwMjYtMDctMTdUMjE6NTA6NTcrMDA6MDCorJzsAAABbElEQVR42u3d0Q3CMAxFUQeY
+BCZJJ+t+6U4wAx+prKdzRkCWdV2KGFVV51kQ4fW4an4/PghCBvq5DDRJA33V/L59EMQM9JhlQxPT
+0JKDuOQw0Gho6NnQhw1NzkBraKKOQg2NoxDaJseY5SjEhgYDDZuPQk85yNrQw0ATlhyOQjQ0dBzo
+VV4fJego1NBoaGicHDY0jkLoOdDehybpKJQcpCWHt+3Q0NByoJfn0NjQ0PQoNNDEbWhHIRoaNDTs
+H2ivj5JzFC4NTdSG1tBoaGg60F5OwoaGrkfhNQ5HIVEb2mM7NDRoaNg+0J5Dk3QU+qYQyQEGGm4Y
+6OW/vklqaL9YQXKAgYZ7GtpAY0ODoxC2J4cNTVRyjMNzaDQ0SA5wFMJfDW1DIznAUQh3JIc/DSLr
+KLSh0dCgoWF/QxtospLDUYijEJo2tLftCEoODU3Whj4MNFHJ4SjEUQgaGu5IDgONhoaWyeE5NFFH
+oYYmxw9ziaSWkA3WJwAAAABJRU5ErkJggg==
+]]
+
+return function()
+  return {
+    comp = ui.col,
+    props = { gap = 1 },
+    children = {
+      { comp = ui.label, props = { text = "A notebook figure, inline:" } },
+      {
+        comp = ui.image,
+        props = {
+          b64 = png,
+          max_cols = 40,
+          max_rows = 12,
+          alt = "<a 120x80 gradient> (no image support here)",
+        },
+      },
+    },
+  }
+end
+]==],
+		},
+	},
+
+	{
 		id = "text_input",
 		name = "text_input",
 		group = "primitive",
