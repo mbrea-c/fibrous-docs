@@ -446,7 +446,13 @@ end
 			.. "(with `allow-passthrough on`). Works on kitty and ghostty; anywhere else it degrades "
 			.. "to the `alt` text. Stateful: retain on mount / release on unmount, refcounted, so the "
 			.. "same content shown N times transmits once. Ids are content-derived, stable across "
-			.. "remounts.",
+			.. "remounts. With the cursor on an image, `yy` copies the PNG to the system clipboard: "
+			.. "the kitty clipboard protocol (OSC 5522, works over ssh+tmux; the first copy doubles "
+			.. "as a capability probe) or wl-copy/xclip/osascript elsewhere — "
+			.. "`require(\"fibrous.image\").config.clipboard` forces a backend. Provider detection "
+			.. "also confirms itself against the terminal (graphics + identity query bracketed by "
+			.. "DA1), promoting or demoting the env-based answer; "
+			.. "`require(\"fibrous.image\").refresh()` re-runs it after a reattach.",
 		props = {
 			{ "b64", "string", "base64 PNG content (ipynb-style embedded newlines tolerated)" },
 			{ "data", "string", "raw PNG bytes (alternative to b64)" },
@@ -461,8 +467,9 @@ end
 			title = "image",
 			intro = "An inline image with an alt fallback — this browser playground has no kitty "
 				.. "protocol, so you see the fallback path; in kitty/ghostty the same code shows pixels.",
-			details = "The provider auto-detects (TERM/tmux passthrough/termguicolors); "
-				.. "`require(\"fibrous.image\").config` can force it. Sizing: explicit cols/rows win, "
+			details = "The provider auto-detects (TERM/tmux passthrough/termguicolors, then confirmed "
+				.. "by querying the terminal itself); `require(\"fibrous.image\").config` can force it. "
+				.. "Sizing: explicit cols/rows win, "
 				.. "otherwise the PNG's pixel size divided by the terminal cell size, capped by "
 				.. "max_cols/max_rows with the aspect ratio preserved.",
 			code = [==[
