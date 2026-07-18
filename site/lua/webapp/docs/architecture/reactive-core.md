@@ -18,6 +18,28 @@ re-render of *this fiber only*. `use_effect` runs a side effect after commit and
 re-runs (with cleanup) when its deps change. `use_ref` is a mutable box that
 persists *without* triggering a render.
 
+## Dispatch batching
+
+A `set` writes its slot *immediately*, so a `get` right after it always reads
+the new value (no stale-snapshot semantics, no functional-update dance). *When*
+the render runs depends on scope. Inside a batched dispatch, sets only mark
+their fibers dirty; when the dispatch ends, the dirty set is collapsed
+(duplicates, fibers covered by a dirty ancestor, fibers unmounted since they
+were queued) and each affected root renders the marked subtrees and flushes
+**once** — still before control returns to Neovim, so no stale frame is ever
+shown. Fibrous batches every dispatch it owns: component handlers (`on_press`,
+`on_toggle`, `on_click`, `on_key`) and input callbacks (`on_change`,
+`on_submit`, `on_focus`, `on_blur`). A handler touching five states costs one
+render and one flush.
+
+Outside any batch — your own keymaps, timers, job callbacks — a `set` renders
+and flushes synchronously on the spot, one pass per set. Wrap such an entry
+point in `fibrous.batch(fn)` to get the same one-flush behavior; nesting is
+fine (only the outermost exit flushes), and `batch` returns `fn`'s results.
+Sets fired *during* the flush itself (a render-time correction, an effect
+reacting to the new state) queue for a follow-up pass within the same
+dispatch; a chain that never settles errors out instead of looping forever.
+
 ## Reconciliation
 
 After a fiber renders, its returned children are diffed against the previous
