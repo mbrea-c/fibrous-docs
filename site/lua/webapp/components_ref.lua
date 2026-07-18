@@ -443,7 +443,8 @@ end
 			.. "terminal once and each grid cell is ordinary buffer text (U+10EEEE plus row/column "
 			.. "diacritics, the image id encoded in the cell's foreground color), so images scroll, "
 			.. "clip and layer exactly like characters — in buffers, floats, and under tmux "
-			.. "(with `allow-passthrough on`). Works on kitty and ghostty; anywhere else it degrades "
+			.. "(with `allow-passthrough on`). Works on kitty and ghostty — and in this site's "
+			.. "in-browser Neovim, whose canvas renderer speaks the same protocol; anywhere else it degrades "
 			.. "to the `alt` text. Stateful: retain on mount / release on unmount, refcounted, so the "
 			.. "same content shown N times transmits once. Ids are content-derived, stable across "
 			.. "remounts. With the cursor on an image, `yy` copies the PNG to the system clipboard: "
@@ -465,8 +466,9 @@ end
 		example = {
 			name = "ref_image",
 			title = "image",
-			intro = "An inline image with an alt fallback — this browser playground has no kitty "
-				.. "protocol, so you see the fallback path; in kitty/ghostty the same code shows pixels.",
+			intro = "An inline image with an alt fallback. This browser renders it through the kitty "
+				.. "placeholder protocol, same as a real kitty/ghostty terminal would; on a terminal "
+				.. "without image support the alt text stands in.",
 			details = "The provider auto-detects (TERM/tmux passthrough/termguicolors, then confirmed "
 				.. "by querying the terminal itself); `require(\"fibrous.image\").config` can force it. "
 				.. "Sizing: explicit cols/rows win, "
