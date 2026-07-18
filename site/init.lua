@@ -30,6 +30,19 @@ vim.api.nvim_create_autocmd("VimEnter", {
 			dofile(bootstrap)
 		end
 
+		-- In the browser (nvim.wasm, flagged by the build via NVIM_WASM=1)
+		-- there is no terminal to probe, but the canvas renderer implements
+		-- kitty Unicode placeholders, so force the image provider on. The
+		-- clipboard escapes have no host-side support there; keep them off.
+		-- pcall-guarded so a pinned fibrous without fibrous.image still boots.
+		if vim.env.NVIM_WASM == "1" then
+			pcall(function()
+				local image = require("fibrous.image")
+				image.config.provider = "kitty"
+				image.config.clipboard = "off"
+			end)
+		end
+
 		local mount = require("fibrous.inline.mount")
 
 		-- flash.nvim jump-to-widget: <C-.> labels every interactive fibrous

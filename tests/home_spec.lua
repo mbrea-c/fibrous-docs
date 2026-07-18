@@ -16,6 +16,7 @@ local TITLES = {
   "Animations",
   "Two focus policies",
   "Markdown, rendered live",
+  "Images, generated live",
 }
 
 local function lines_of(bufnr)

@@ -92,6 +92,12 @@
             ];
             initLua = ./site/init.lua;
             extraLuaDirs = [ ./site/lua ];
+            # site/init.lua keys wasm-only behavior off this (forcing the
+            # image provider: the web renderer speaks kitty placeholders,
+            # but there is no terminal to auto-detect)
+            env = {
+              NVIM_WASM = "1";
+            };
             font = {
               family = "Iosevka Nerd Font Mono";
               px = 17;

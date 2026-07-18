@@ -20,6 +20,16 @@ package.path = table.concat({
   package.path,
 }, ";")
 
+-- The suite must not depend on the terminal it runs under: the image
+-- provider auto-detects from the real environment (TERM, tmux), so a
+-- kitty-ish terminal would make every homepage mount transmit real graphics
+-- escapes to stderr mid-suite. Pin the provider to text; images_spec
+-- overrides it per test (through its own writer). pcall: FIBROUS_PATH may
+-- point at a fibrous without fibrous.image.
+pcall(function()
+  require("fibrous.image").config.provider = "text"
+end)
+
 local harness = require("tests.harness")
 harness.expose()
 

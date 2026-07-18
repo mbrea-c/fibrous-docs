@@ -412,4 +412,57 @@ return function(ctx)
 end
 ]==],
   },
+  {
+    name = "images",
+    title = "Images, generated live",
+    intro = "Inline images are ordinary cells: this PNG is generated in Lua on every "
+      .. "render (webapp.pnggen, a zero-dependency encoder) and displayed with ui.image. "
+      .. "Shift the palette and a brand new image is encoded, transmitted and painted — "
+      .. "edit the math on the left to draw something else entirely.",
+    details = "fibrous images ride the kitty graphics protocol with Unicode placeholders: "
+      .. "the picture is transmitted once (identified by a content hash, so an unchanged "
+      .. "image never re-uploads) and referenced by regular text cells, which is why it "
+      .. "scrolls, clips and layers exactly like the text around it. In this browser the "
+      .. "nvim-wasm canvas renderer implements the same protocol a real kitty or ghostty "
+      .. "terminal speaks; on terminals without image support the component degrades to "
+      .. "its alt text. Try it in the native site too (nix run .#native inside kitty).",
+    code = [==[
+local ui = require("fibrous.inline.components")
+local png = require("webapp.pnggen")
+
+return function(ctx)
+  local shift = ctx.use_state(0)
+  local s = shift.get()
+  local data = png.rgb(96, 48, function(x, y)
+    local r = 128 + 127 * math.sin((x + s) / 14)
+    local g = 128 + 127 * math.sin((y + s) / 7)
+    local b = 128 + 127 * math.sin((x + y + s * 2) / 21)
+    return r, g, b
+  end)
+  return {
+    comp = ui.col,
+    props = { gap = 1 },
+    children = {
+      {
+        comp = ui.image,
+        props = {
+          data = data,
+          cols = 40,
+          alt = "[images need a kitty-protocol terminal]",
+        },
+      },
+      {
+        comp = ui.button,
+        props = {
+          label = "Shift the palette",
+          on_press = function()
+            shift.set(s + 6)
+          end,
+        },
+      },
+    },
+  }
+end
+]==],
+  },
 }
