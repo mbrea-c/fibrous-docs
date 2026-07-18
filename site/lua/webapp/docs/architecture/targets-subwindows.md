@@ -6,6 +6,15 @@ canvas and buffer). Targets flush *parent-first*, so a child's width constraint
 comes from its parent's freshly laid-out boundary rect; `subwin.lua` anchors each
 target's float to its parent's window, recursively.
 
+`popup` is the odd one out: the same flush-target machinery as a container, but
+the leaf occupies *zero* cells in the parent layout — its rect is just an anchor
+point, and the float is placed there as an overlay (the dropdown's option list).
+Its inner tree lays out at its own natural width, the float clips against the
+*editor* rather than the parent viewport (flipping above the anchor when there
+is no room below), it sits in a zindex band above any nesting depth, and it is
+never focusable — the widget that keeps focus drives it through state. Having no
+inline box, it has no mirror and no render policy either.
+
 ## The mirror
 
 When a sub-buffer's float is hidden, subwin transcribes the buffer's visible

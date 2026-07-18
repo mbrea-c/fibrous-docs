@@ -524,9 +524,14 @@ end
 			.. "<CR> submits (insert-mode <CR> is a newline, so it composes multi-line).",
 		props = {
 			{ "value", "string", "initial seed text (the buffer is the source of truth after)" },
+			{ "singleline", "boolean", "pin to one line: insert-mode <CR> submits too, pasted newlines flatten to spaces" },
 			{ "on_change", "fun(value)", "fired on every edit (TextChanged/TextChangedI)" },
-			{ "on_submit", "fun(value)", "fired on NORMAL-mode <CR>; insert <CR> is always a plain newline" },
+			{ "on_submit", "fun(value)", "fired on NORMAL-mode <CR>; insert <CR> is a plain newline (unless singleline)" },
 			{ "clear_on_submit", "boolean", "empty the field after on_submit" },
+			{ "on_focus", "fun(value)", "fired when the float gains the cursor" },
+			{ "on_blur", "fun(value)", "fired when the float loses the cursor" },
+			{ "on_create", "fun(bufnr)", "creation-time escape hatch: wire buffer-local maps/options onto the input's buffer" },
+			{ "render", "string", "\"focus\" (default) | \"always\" — float visibility policy" },
 			{ "insert_on_click", "boolean", "click enters insert mode (vs. normal-mode focus)" },
 			{ "capture_cursor", "boolean", "hold the cursor: edge h/j/k/l and <C-d>/<C-u> stay native; <Esc> exits" },
 		},
@@ -655,6 +660,120 @@ return function()
     comp = ui.container,
     props = { height = 6, mode = "scroll", style = { border = true } },
     children = rows,
+  }
+end
+]==],
+		},
+	},
+
+	{
+		id = "popup",
+		name = "popup",
+		group = "primitive",
+		summary = "A zero-footprint overlay: children render into the popup's own buffer, shown "
+			.. "in a float AT the node's anchor point (directly below the preceding sibling, same "
+			.. "left edge) — occupying NO cells in the parent layout. The float escapes the mount's "
+			.. "box: it clips against the editor, flips above the anchor when there is no room "
+			.. "below, sits above any nesting depth, and is never focusable. Drive it through state "
+			.. "from the widget that keeps focus (the dropdown is its first consumer). Style props "
+			.. "apply to the popup's INNER tree, so borders and backgrounds paint inside the float.",
+		props = {
+			{ "children", "node[]", "laid out as a col at their natural width (gap/align/justify apply)" },
+			{ "min_width", "integer", "floor the overlay's natural width (e.g. to its anchoring field)" },
+			{ "max_width", "integer", "cap the overlay's natural width" },
+			{ "max_height", "integer", "cap the inner layout's height" },
+			{ "flip_offset", "integer", "rows cleared above the anchor when flipping (the anchoring widget's height); default 1" },
+		},
+		style = true,
+		example = {
+			name = "ref_popup",
+			title = "popup",
+			intro = "Toggle the overlay — the row under the button never moves: the popup reserves no space.",
+			details = "The popup renders when the component includes it and vanishes when it "
+				.. "doesn't — visibility IS conditional rendering, no open prop. Its float overlays "
+				.. "whatever is below the anchor, escaping the mount's own box if it has to.",
+			code = [==[
+local ui = require("fibrous.inline.components")
+
+return function(ctx)
+  local open = ctx.use_state(false)
+  local children = {
+    {
+      comp = ui.button,
+      props = {
+        label = open.get() and "hide overlay" or "show overlay",
+        on_press = function() open.set(not open.get()) end,
+      },
+    },
+  }
+  if open.get() then
+    children[#children + 1] = {
+      comp = ui.popup,
+      props = { min_width = 24 },
+      children = {
+        { comp = ui.label, props = { text = " an overlay float", width = 24, style = { hl = "FibrousPopup" } } },
+        { comp = ui.label, props = { text = " zero rows reserved", width = 24, style = { hl = "FibrousPopup" } } },
+      },
+    }
+  end
+  children[#children + 1] =
+    { comp = ui.label, props = { text = "this row sits directly under the button" } }
+  return { comp = ui.col, props = {}, children = children }
+end
+]==],
+		},
+	},
+
+	{
+		id = "dropdown",
+		name = "dropdown",
+		group = "builtin",
+		summary = "A select field: a singleline text_input plus a popup listing the filtered "
+			.. "options. Focus opens the popup (any mode) showing every option with the selection "
+			.. "on the current value; typing fuzzy-filters and resets the selection to the best "
+			.. "match; <C-n>/<C-p> move it (wrapping), <CR>/<C-y> commit it into the field, <C-e> "
+			.. "closes the popup keeping the typed text. Unfocus commits the selection; typed text "
+			.. "matching no option survives only with free_text = true (default is strict: it "
+			.. "reverts to the last committed value).",
+		props = {
+			{ "options", "string[]", "the selectable values" },
+			{ "value", "string", "initial value (also the revert target until a commit)" },
+			{ "width", "integer", "field width in cells; default 20 (the popup is at least this wide)" },
+			{ "max_height", "integer", "popup rows shown at once, windowed around the selection; default 8" },
+			{ "free_text", "boolean", "let typed text matching no option survive unfocus; default false (strict)" },
+			{ "filter", "fun(options, text): string[]", "replace the fuzzy filter (prefix, custom ranking, ...)" },
+			{ "on_select", "fun(value)", "fired on every committed CHANGE (reverts and re-commits stay silent)" },
+			{ "on_change", "fun(text)", "mirrors the raw typed text" },
+			{ "flip_offset", "integer", "passed to the popup; default 1 (the field's own height)" },
+		},
+		style = true,
+		example = {
+			name = "ref_dropdown",
+			title = "dropdown",
+			intro = "Focus the field (<CR> or i on it) — the options overlay opens; type to filter, <C-n>/<C-p> + <CR> to pick.",
+			details = "Strict by default: unfocusing with text that names no option reverts the "
+				.. "field. The popup is a ui.popup overlay, so it drops over whatever is below "
+				.. "the field without reserving rows in the page.",
+			code = [==[
+local ui = require("fibrous.inline.components")
+
+return function(ctx)
+  local picked = ctx.use_state("(none)")
+  return {
+    comp = ui.col,
+    props = { gap = 1 },
+    children = {
+      { comp = ui.label, props = { text = "picked: " .. picked.get() } },
+      {
+        comp = ui.dropdown,
+        props = {
+          options = { "apple", "apricot", "banana", "cherry", "grape", "mango" },
+          value = "",
+          width = 22,
+          on_select = function(v) picked.set(v) end,
+        },
+      },
+    },
   }
 end
 ]==],
