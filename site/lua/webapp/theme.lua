@@ -4,8 +4,10 @@
 --
 -- Three audiences: the page chrome (Normal/Title/Comment/NonText/...), the
 -- regex lua syntax inside the playground editors (Statement/String/...), and
--- fibrous' theme hooks (FibrousBorder → LineNr, FibrousBorderFocus →
--- Directory, hover via CursorLine), which color through their default links.
+-- fibrous' theme hooks (FibrousBorder from LineNr, FibrousBorderFocus from
+-- Directory, hover via CursorLine), which color through fibrous' own defaults.
+-- Set these fg-only: fibrous paints borders as text over the page background,
+-- and takes their colour without any background the source group carries.
 
 local P = {
   bg = "#1a1b26",
