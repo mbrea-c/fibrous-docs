@@ -435,6 +435,132 @@ end
 	},
 
 	{
+		id = "code",
+		name = "code",
+		group = "builtin",
+		stateful = true,
+		summary = "A code snippet: treesitter-highlighted source (the detached string parser — no "
+			.. "scratch buffer), an optional file-reference header, and a line-number gutter whose "
+			.. "numbers MATCH the referenced code (`ref.start_line` seeds it), so a quoted region "
+			.. "reads like the file it came from. The header is a real interactive span (hover, "
+			.. "click, flash-jump) that jumps to the ref by default — in the previous window, since "
+			.. "the click lands with the mount's own window current. The language defaults from "
+			.. "ref.path via vim.filetype.match; without a resolvable parser the body degrades to "
+			.. "plain @markup.raw (fenced-code rule — plain here in WASM). Stateful: the per-line "
+			.. "highlight reshape is memoized per (code, lang) on a ref.",
+		props = {
+			{ "code", "string", "the source text" },
+			{ "lang", "string", "treesitter language; defaults from ref.path, degrades to plain" },
+			{ "ref", "{path, start_line?}", "what the snippet quotes: header text, gutter seed, jump target" },
+			{ "start_line", "integer", "gutter start without (or overriding) a ref (default 1)" },
+			{ "line_numbers", "boolean", "the gutter (default true)" },
+			{ "header", "boolean", "the reference row (default: shown when ref is present)" },
+			{ "on_open", "fun(ref)", "header activation; defaults to edit + jump in the previous window" },
+			{ "max_lines", "integer", "cap rendered lines; a dim \"… N more lines\" marker follows" },
+		},
+		layout = true,
+		style = true,
+		example = {
+			name = "ref_code",
+			title = "code",
+			intro = "A snippet quoting a file: clickable reference header, gutter numbers matching it.",
+			details = "The gutter starts at ref.start_line, so the numbers are the FILE's, not the "
+				.. "snippet's. Highlighting uses the treesitter string parser where one exists and "
+				.. "degrades to plain text here in WASM — nothing else changes.",
+			code = [==[
+local ui = require("fibrous.inline.components")
+
+return function()
+  return {
+    comp = ui.code,
+    props = {
+      code = table.concat({
+        "local function greet(name)",
+        "  -- a warm welcome",
+        '  return ("hello, %s!"):format(name)',
+        "end",
+      }, "\n"),
+      lang = "lua",
+      ref = { path = "lua/app/greet.lua", start_line = 12 },
+    },
+  }
+end
+]==],
+		},
+	},
+
+	{
+		id = "diff",
+		name = "diff",
+		group = "builtin",
+		stateful = true,
+		summary = "A unified diff: line-level add/delete rows whose DiffAdd/DiffDelete fills sit "
+			.. "UNDER the syntax spans (hlmix composes fg-syntax over bg-diff — no combined groups "
+			.. "to define), a dual old│new line-number gutter with a sign column, and unchanged "
+			.. "runs folded to `context` lines around the hunks. Feed it either the two sides' "
+			.. "CONTENT (`before`/`after` — vim.diff finds the hunks, and each side highlights "
+			.. "once as a whole so the parser sees real surrounding code) or an already-formatted "
+			.. "`unified` diff text, whose hunk headers carry the absolute numbering. Same "
+			.. "clickable reference header as ui.code; `start_line` shifts both sides' numbers so "
+			.. "a region diff matches its file. Stateful: rows + per-line highlights are memoized "
+			.. "on a ref.",
+		props = {
+			{ "before/after", "string", "the two sides' content; vim.diff finds the hunks" },
+			{ "unified", "string", "an already-formatted unified diff (alternative to before/after)" },
+			{ "lang", "string", "treesitter language; defaults from ref.path, degrades to plain" },
+			{ "ref", "{path, start_line?}", "the diffed file: header text, numbering seed, jump target" },
+			{ "start_line", "integer", "shift both sides' numbers (leave unset with `unified`)" },
+			{ "context", "integer", "unchanged lines kept around each hunk (default 3); the rest folds to ⋯" },
+			{ "line_numbers", "boolean", "the dual gutter (default true; false keeps the sign column)" },
+			{ "header", "boolean", "the reference row (default: shown when ref is present)" },
+			{ "on_open", "fun(ref)", "header activation; defaults to edit + jump in the previous window" },
+			{ "max_lines", "integer", "cap rendered rows; a dim \"… diff truncated\" marker follows" },
+		},
+		layout = true,
+		style = true,
+		example = {
+			name = "ref_diff",
+			title = "diff",
+			intro = "A before/after pair as a unified diff: dual gutter, sign column, folded context.",
+			details = "The changed rows are painted with the Diff* background fills; where a "
+				.. "treesitter parser exists the syntax colours compose over them (plain here in "
+				.. "WASM). Context beyond three lines folds to a ⋯ row.",
+			code = [==[
+local ui = require("fibrous.inline.components")
+
+return function()
+  local before = table.concat({
+    "local M = {}",
+    "",
+    "function M.greet(name)",
+    "  return 'hello ' .. name",
+    "end",
+    "",
+    "function M.part(name)",
+    "  return 'bye ' .. name",
+    "end",
+    "",
+    "return M",
+  }, "\n")
+  local after = before
+    :gsub("'hello ' %.%. name", '("hello, %%s!"):format(name)')
+    :gsub("'bye ' %.%. name", '("bye, %%s."):format(name)')
+  return {
+    comp = ui.diff,
+    props = {
+      before = before,
+      after = after,
+      lang = "lua",
+      ref = { path = "lua/app/greet.lua", start_line = 1 },
+      context = 1,
+    },
+  }
+end
+]==],
+		},
+	},
+
+	{
 		id = "image",
 		name = "image",
 		group = "builtin",
