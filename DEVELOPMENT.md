@@ -5,7 +5,7 @@ boots a real Neovim in the browser and mounts a fibrous UI (`site/init.lua`) as
 the landing page and interactive docs. It sits on top of two independent
 libraries, both pinned as flake inputs:
 
-- **fibrous** (`../nui-reactive`), the UI framework the site is built with.
+- **fibrous** (`../fibrous.nvim`), the UI framework the site is built with.
 - **nvim-wasm-core** (`../nvim-wasm-core`), upstream Neovim compiled to
   wasm32-wasi. It is a general-purpose library, agnostic of fibrous; this site is
   just one of its consumers.
@@ -23,8 +23,8 @@ Two very different things load fibrous, and they load DIFFERENT copies:
   to a checkout to use a working tree (uncommitted and untracked files included):
 
   ```sh
-  FIBROUS_PATH="$HOME/src/nui-reactive" nix run .#test
-  FIBROUS_PATH="$HOME/src/nui-reactive" nix run .#native
+  FIBROUS_PATH="$HOME/src/fibrous.nvim" nix run .#test
+  FIBROUS_PATH="$HOME/src/fibrous.nvim" nix run .#native
   ```
 
 - **The wasm site build** (`nix run` to serve, `nix build .#site`) bakes the
@@ -35,7 +35,7 @@ Two very different things load fibrous, and they load DIFFERENT copies:
   drop untracked files):
 
   ```sh
-  nix build .#site --override-input fibrous path:../nui-reactive
+  nix build .#site --override-input fibrous path:../fibrous.nvim
   nix build .#site --override-input nvim-wasm-core path:../nvim-wasm-core
   ```
 

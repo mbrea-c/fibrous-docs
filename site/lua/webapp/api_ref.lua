@@ -19,9 +19,9 @@ return {
 		blocks = {
 			{
 				kind = "p",
-				text = "A fibrous app is a component mounted onto a window. Every mount target puts the "
-					.. "host buffer in a ROOT FLOAT (so a resize can never clobber widgets before "
-					.. "relayout). opts.mode picks the constraint: \"fixed\" (default) lays out at the "
+				text = "A fibrous app is a component mounted onto a window. Window and split mounts can display the "
+					.. "host buffer in a root float (default), or directly in the pane with "
+					.. "render = \"buffer\". opts.mode picks the constraint: \"fixed\" (default) lays out at the "
 					.. "window height for app-style UIs; \"scroll\" grows the buffer with content and "
 					.. "makes the window a natively-scrolling viewport for website-style UIs — this "
 					.. "docs site runs in \"scroll\".",
@@ -188,6 +188,14 @@ return {
 					.. "leaves alike — accepts these; gap only applies to containers (col/row/container).",
 			},
 			{ kind = "table", title = "layout props", rows = components_ref.LAYOUT_PROPS },
+			{ kind = "h", text = "Inline overflow and fixed footers" },
+			{
+				kind = "p",
+				text = "Set overflow = hidden on a col or row to clip descendants to its content box. "
+					.. "Combine a grow = 1 content column with a height = 1 footer in a fixed-height mount. "
+					.. "The content stays in the same buffer; hidden controls are excluded from hover, activation, "
+					.. "Tab navigation and jump targets. Clipping does not add scrolling.",
+			},
 			{ kind = "h", text = "rich text: span lists + SpanStyle" },
 			{
 				kind = "p",
@@ -219,7 +227,7 @@ return {
 		blocks = {
 			{
 				kind = "p",
-				text = "The whole app is ONE unmodifiable buffer; interactivity rides the cursor. A "
+				text = "Each flush target renders into an unmodifiable buffer; interactivity rides the cursor. A "
 					.. "node opts in with node-level props (NOT under `style`). `role` marks it a button "
 					.. "or checkbox: the deepest role-carrying node under the cursor takes the hover cue, "
 					.. "and <CR>/<Space>/click activates it. button/checkbox/text_input/raw_buffer set these "

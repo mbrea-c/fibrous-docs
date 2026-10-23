@@ -38,7 +38,7 @@ When your change depends on unreleased fibrous behavior, point the suite at your
 checkout (working tree, untracked files included):
 
 ```sh
-FIBROUS_PATH="$HOME/src/nui-reactive" nix run .#test
+FIBROUS_PATH="$HOME/src/fibrous.nvim" nix run .#test
 ```
 
 ## 2. This repo IS fibrous' documentation, so keep it true
@@ -79,7 +79,7 @@ change through the real homepage.
   (source, `flake = false`) and `nvim-wasm-core` (the Neovim-to-wasm engine). To
   build or serve the site against a WIP tree of either, override the input with a
   `path:` ref, which brings untracked files along:
-  `nix build .#site --override-input fibrous path:../nui-reactive`.
+  `nix build .#site --override-input fibrous path:../fibrous.nvim`.
 - The native entry points (`test`, `native`, `bench`) resolve fibrous at runtime
   from `FIBROUS_PATH` and never touch the wasm toolchain, so they are the fast
   loop. The wasm **site build** bakes the pinned inputs; see DEVELOPMENT.md.

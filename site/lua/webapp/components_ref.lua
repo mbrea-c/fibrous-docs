@@ -19,6 +19,7 @@ local LAYOUT_PROPS = {
 	{ "min_width/max_width", "integer", "clamp the width (responsive shrink/grow)" },
 	{ "min_height/max_height", "integer", "clamp the height" },
 	{ "grow", "number", "weight for sharing leftover main-axis space (flex-grow; 0 = don't grow)" },
+	{ "overflow", "string", "col/row: visible (default) | hidden; hidden clips descendants to the content box, including interaction" },
 	{ "gap", "integer", "space between children (containers only: col/row/container)" },
 	{ "align", "string", "cross-axis alignment of children: stretch (default) | start | center | end" },
 	{ "justify", "string", "main-axis distribution: start (default) | center | end | space-between" },

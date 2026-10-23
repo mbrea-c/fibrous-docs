@@ -1,6 +1,6 @@
 # fibrous-docs
 
-The [fibrous.nvim](../nui-reactive) playground site: **real, upstream Neovim —
+The [fibrous.nvim](../fibrous.nvim) playground site: **real, upstream Neovim —
 compiled to WebAssembly — running entirely client-side in the browser**, with
 fibrous loaded as a plugin and a fibrous-rendered landing UI. Built on
 [nvim-wasm-core](../nvim-wasm-core)'s `mkNvimWasmWeb` API.
@@ -34,7 +34,7 @@ Both default to the flake's **pinned** fibrous input — what the built site
 ships. Point them at a local tree (no lock bump needed) with:
 
 ```sh
-FIBROUS_PATH=../nui-reactive nix run .#bench
+FIBROUS_PATH=../fibrous.nvim nix run .#bench
 ```
 
 `.#native` answers "is it slow, or is it slow *in wasm*"; `.#bench` puts
@@ -60,6 +60,6 @@ Neovim's XDG tree, and [`site/init.lua`](site/init.lua) becomes its
 "GitHub Actions").
 
 **Before CI can build**: the flake inputs currently point at sibling checkouts
-(`path:../nvim-wasm-core`, `path:../nui-reactive`) for local development.
+(`path:../nvim-wasm-core`, `path:../fibrous.nvim`) for local development.
 Publish those repos and switch the inputs to `github:` URLs (see the TODO in
 `flake.nix`).
