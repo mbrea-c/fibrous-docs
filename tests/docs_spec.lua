@@ -175,4 +175,25 @@ describe("webapp docs shell", function()
 
     handle.unmount()
   end)
+
+  it("documents source selection and projection through Markdown-backed API prose", function()
+    local handle = mount_docs()
+    press(handle, "API")
+    press(handle, "Source mapping")
+    local text = page_text(handle)
+    assert.truthy(text:find("sources.resolve", 1, true))
+    assert.truthy(text:find("sources.project", 1, true))
+    assert.truthy(text:find("zero-based", 1, true))
+    handle.unmount()
+    local refs = require("webapp.components_ref")
+    for _, id in ipairs({ "text", "markdown" }) do
+      local found = false
+      for _, entry in ipairs(refs) do
+        if entry.id == id then
+          for _, prop in ipairs(entry.props) do if prop[1] == "source" then found = true end end
+        end
+      end
+      assert.is_true(found, id .. " source prop missing")
+    end
+  end)
 end)

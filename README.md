@@ -59,7 +59,6 @@ Neovim's XDG tree, and [`site/init.lua`](site/init.lua) becomes its
 `actions/deploy-pages` on every push to `main` (repo setting: Pages → Source →
 "GitHub Actions").
 
-**Before CI can build**: the flake inputs currently point at sibling checkouts
-(`path:../nvim-wasm-core`, `path:../fibrous.nvim`) for local development.
-Publish those repos and switch the inputs to `github:` URLs (see the TODO in
-`flake.nix`).
+The flake inputs are pinned GitHub sources. Native tests and previews can use
+a working checkout with `FIBROUS_PATH`; a wasm build needs a temporary
+`--override-input fibrous path:../fibrous.nvim` or an updated lockfile.

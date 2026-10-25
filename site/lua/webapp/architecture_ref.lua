@@ -10,6 +10,7 @@ return {
 	{ id = "layout", name = "Layout", md = "architecture/layout.md" },
 	{ id = "targets-subwindows", name = "Subwindows", md = "architecture/targets-subwindows.md" },
 	{ id = "mount-lifecycle", name = "Mount & resize", md = "architecture/mount-lifecycle.md" },
+	{ id = "source-mapping", name = "Source mapping", md = "architecture/source-mapping.md" },
 	{ id = "interaction", name = "The cursor", md = "architecture/interaction.md" },
 	{ id = "interactions", name = "Trigger graph", md = "architecture/interactions.md" },
 }

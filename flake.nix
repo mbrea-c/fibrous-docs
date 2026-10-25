@@ -2,11 +2,7 @@
   description = "fibrous-docs — the fibrous playground: real Neovim + fibrous running client-side in the browser";
 
   inputs = {
-    # TODO(publish): once these repos live on GitHub, switch to
-    #   nvim-wasm-core.url = "github:<owner>/nvim-wasm-core";
-    #   fibrous.url = "github:<owner>/fibrous.nvim";
-    # so CI (GitHub Pages workflow) can fetch them. Absolute path inputs are
-    # local-development only (relative ones cannot escape the flake root).
+    # Published, pinned sources for CI. Use path: overrides for local previews.
     nvim-wasm-core.url = "github:mbrea-c/nvim-wasm-core";
     fibrous = {
       url = "github:mbrea-c/fibrous.nvim";

@@ -341,6 +341,12 @@ return {
 	},
 
 	{
+		id = "sources",
+		name = "Source mapping",
+		blocks = { { kind = "markdown", md = "api/sources.md" } },
+	},
+
+	{
 		id = "model",
 		name = "Component model",
 		blocks = {

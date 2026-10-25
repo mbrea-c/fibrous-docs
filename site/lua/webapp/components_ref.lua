@@ -134,7 +134,8 @@ end
 			.. "over it (wrap = false / true).",
 		props = {
 			{ "text", "string|Span[]", "the content; a span list mixes plain strings and { text, hl } chunks" },
-			{ "wrap", "boolean", "wrap to the node width (paragraph) vs. clip to one line (label)" },
+			{ "wrap", "boolean|string", "true: word wrap; char: character wrap; false: clip to one line" },
+			{ "source", "table", "{ id, text, data?, offset?, map? }; logical byte provenance, see API / Source mapping" },
 		},
 		layout = true,
 		style = true,
@@ -379,6 +380,8 @@ end
 			.. "re-renders and resizes never re-parse.",
 		props = {
 			{ "text", "string", "the markdown source" },
+			{ "source", "table", "optional logical document descriptor; tracks original Markdown bytes through reflow" },
+			{ "source_entry", "table", "optional whole-entry fallback for generated or unmapped content" },
 			{ "on_link", "fun(url)", "called when a link is activated (<CR>/click); defaults to vim.ui.open" },
 			{ "live", "boolean", "while true (still streaming) render the raw text plain and defer the parse" },
 			{ "highlight", "fun(text, lang)", "override the default treesitter fenced-code highlighter" },

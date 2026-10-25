@@ -38,6 +38,8 @@ local function render_block(block)
 		return { comp = props_table.table, props = { title = block.title, rows = block.rows } }
 	elseif block.kind == "code" then
 		return code_block(block.lines)
+	elseif block.kind == "markdown" then
+		return { comp = ui.markdown, props = { text = require("webapp.md_docs").load(block.md) } }
 	end
 	return { comp = ui.col, props = {} }
 end
