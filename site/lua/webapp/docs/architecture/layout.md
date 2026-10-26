@@ -21,6 +21,29 @@ viewport window; a fixed number is **app** mode, the canvas is exactly the windo
 height. The mount chooses this per target and the host reads it from `get_size`
 at every flush.
 
+## Text preparation and resize
+
+Host-built text nodes keep flattened text and span metadata across width-only
+changes. When wrapping is needed, logical lines and word tokens are scanned
+again rather than retaining token tables or cached word widths between reflows.
+This keeps the cache limited to text/span preparation and reusable output.
+
+Wrapping is recomputed for a new content width. If a parent's resize leaves the
+text width unchanged, for example inside a fixed-width or max-width-clamped
+component, ASCII-only wrapped lines and attributed runs are reused. Non-ASCII
+wrapped text still goes through normal width measurement. Nowrap lines and
+their attributed runs are width-independent and can also be reused; non-ASCII
+nowrap text has its display dimensions remeasured without rebuilding those lines.
+
+Preparation belongs to the immutable host node, not a global cache of every
+previous width. Changed text, styling, handlers, or source descriptors rebuild
+the node and invalidate it. Mutable raw layout trees do not opt into this cache
+and are recomputed normally; width-generated fill content is also regenerated.
+
+Span attribution seeks the relevant ordered range and advances between its
+boundaries, rather than looking up the covering span at every byte. Highlight,
+interaction identity, and original source positions stay attached to each run.
+
 ## Inline overflow and fixed footers
 
 A row or column accepts `overflow = "hidden"` to clip its descendants to its

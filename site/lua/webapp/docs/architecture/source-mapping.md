@@ -18,6 +18,15 @@ the same metadata in the opposite direction. It never guesses between repeated
 copies of a quote. Application-owned raw buffers can register identity mapping
 separately.
 
+Rendered-tree queries filter unselected rows, unrelated source IDs, and
+unrequested source bytes before reading and checking buffer text. They still
+validate complete visible clusters against the actual paint. Whole-entry lookup
+uses the enclosing box geometry instead of walking the entry's text.
+
+Contiguous identity maps inside the Markdown parser use private offset/length
+ranges, including in-bounds slices. Maps published on the document AST remain
+ordinary byte arrays; neither descriptors nor the public projection API change.
+
 Generated elements are not automatically source text. A surrounding
 `source_entry` descriptor supplies an explicitly coarse entry fallback when an
 exact mapping is unavailable, including mixed selections containing rendered

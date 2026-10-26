@@ -25,7 +25,8 @@ Markdown parsing. It maps prose, headings, emphasis, links, lists, blockquotes,
 tables, escapes, inline code, fenced code, UTF-8, and CRLF normalization.
 It caches the mapped AST across resize. Direct parser consumers use
 `markdown.parse(text, { source = true })` and pass `source` to
-`fibrous.doc.render.render(doc, opts)`.
+`fibrous.doc.render.render(doc, opts)`. Public AST source maps remain ordinary
+byte arrays; the parser's compact intermediate representation is private.
 
 For a coarse fallback, put `source_entry = descriptor` on an enclosing node.
 Generated content such as rendered math has no exact byte mapping. A selection
