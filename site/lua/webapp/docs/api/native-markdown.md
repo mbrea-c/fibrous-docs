@@ -25,7 +25,8 @@ Whole-entry provenance anchors (`source_entry`) also stay on Lua to preserve
 coarse comments; precise `source` mappings are supported by the native path.
 Edits and structural interaction changes return to Lua; the next eligible width
 change compiles the new revision. Unsupported styling, controls, general UI
-trees, fixed-height views and unavailable/incompatible modules fall back to Lua.
+trees, fixed-height views, content-fitted floats and unavailable/incompatible
+modules fall back to Lua.
 Nested Markdown and viewport-virtualized transcripts are not accelerated by this
 renderer. It is not a Rust Markdown parser or a general replacement layout engine.
 

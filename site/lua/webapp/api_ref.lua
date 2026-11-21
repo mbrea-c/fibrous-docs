@@ -55,6 +55,7 @@ return {
 				title = "opts",
 				rows = {
 					{ "width/height", "integer", "size; default 60% of columns/lines" },
+					{ "fit_width", "boolean", "fit content up to the configured width; follows content changes and editor resizes (default false)" },
 					{ "row/col", "integer", "position; default centered" },
 					{ "mode", "string", "\"fixed\" (default) | \"scroll\"" },
 					{ "mouse", "table|false", "{ activate, follow }; false disables mouse maps" },
