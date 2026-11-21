@@ -49,6 +49,18 @@ window and interaction layer spend to decide what to re-extract, reposition, or
 leave alone, so an animation in one corner does not force every widget to
 re-sync.
 
+## Optional native Markdown reflow
+
+An explicitly enabled LuaJIT package can retain a single root scroll-mode
+Markdown document in Rust between width changes. Lua still builds and parses
+each revision. The native adapter returns changed lines, highlights, source spans
+and link geometry, preserving normal host interaction and source queries.
+Edits release the retained frame back to Lua. Unsupported layouts and missing
+modules use the ordinary pipeline.
+
+This path is independent of viewport rendering and does not accelerate arbitrary
+nested Markdown. The standard package and Wasm site never load a native module.
+
 ## Measuring resize work
 
 In a Fibrous source checkout, `nix run .#bench-resize-profile` compares ordinary

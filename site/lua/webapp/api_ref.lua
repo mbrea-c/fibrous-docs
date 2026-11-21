@@ -102,6 +102,11 @@ return {
 	},
 
 	{
+		id = "native-markdown",
+		name = "Optional native Markdown",
+		blocks = { { kind = "markdown", md = "api/native-markdown.md" } },
+	},
+	{
 		id = "hooks",
 		name = "Hooks",
 		blocks = {
@@ -188,6 +193,8 @@ return {
 					.. "leaves alike — accepts these; gap only applies to containers (col/row/container).",
 			},
 			{ kind = "table", title = "layout props", rows = components_ref.LAYOUT_PROPS },
+			{ kind = "h", text = "Experimental viewport rendering" },
+			{ kind = "markdown", md = "api/viewport.md" },
 			{ kind = "h", text = "Inline overflow and fixed footers" },
 			{
 				kind = "p",

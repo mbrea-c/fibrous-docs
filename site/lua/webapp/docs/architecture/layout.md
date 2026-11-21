@@ -81,3 +81,24 @@ the clip. Dropdown popups may extend beyond it while their anchor is visible.
 
 This is clipping, not an independent scrolling viewport. Use `ui.container`
 when content must scroll in place.
+
+
+## Experimental viewport rendering
+
+A scrolling target can reserve rows for offscreen entries in an append-ordered
+column. Its owner creates a `require("fibrous.inline.visibility").new({ estimate = 3, gap = 1 })`
+model and builds only the entries returned by `model:use_range(ctx, count, revision)`.
+The root column receives `content_visibility = "auto"`, `visibility = model`,
+the same `gap`, and a `sequences` array containing each mounted child's original
+one-based index. A changed revision invalidates cached heights after filtering.
+Call `model:bind(winid)` from the container's creation callback and `model:close()`
+when it unmounts.
+
+The layout solver accepts an optional `origin_y` in `layout.compute(tree, opts)`;
+viewport painting uses it to preserve document coordinates for the mounted band.
+
+The height index maps a native buffer row to an estimated entry. Measuring the
+visible entries refines this index and restores the reading position. The cell
+grid, highlights and source geometry cover only the mounted portion. Other buffer
+rows contain empty strings. Buffer-wide search and yank can therefore miss
+offscreen text, and an individual very tall entry is realized in full.

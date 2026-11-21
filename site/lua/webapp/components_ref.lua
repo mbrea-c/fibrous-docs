@@ -61,6 +61,7 @@ return {
 			.. "across the axis, justify distributes them along it, grow shares leftover space.",
 		props = {
 			{ "children", "node[]", "the stacked child nodes" },
+			{ "content_visibility", "string", "experimental auto for the root of a scroll target; see API > Styling for the visibility model and sequences contract" },
 		},
 		layout = true,
 		style = true,
