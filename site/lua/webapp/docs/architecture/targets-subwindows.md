@@ -6,6 +6,9 @@ canvas and buffer). Targets flush *parent-first*, so a child's width constraint
 comes from its parent's freshly laid-out boundary rect; `subwin.lua` anchors each
 target's float to its parent's window, recursively.
 
+Inside a buffer mount, embedded widgets use the host's normal background. Opening
+an independent popup from one of those widgets uses the usual float background.
+
 `popup` is the odd one out: the same flush-target machinery as a container, but
 the leaf occupies *zero* cells in the parent layout — its rect is just an anchor
 point, and the float is placed there as an overlay (the dropdown's option list).

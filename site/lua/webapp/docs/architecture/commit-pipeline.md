@@ -26,6 +26,11 @@ canvas does not shrink, it repaints only the changed subtrees, growing new blank
 rows in place when needed. A width change or shrinking canvas starts a full
 paint.
 
+A foreground highlight inside a filled box inherits the fill's background.
+When the colorscheme changes, Fibrous updates these combined highlights after
+the `ColorScheme` callbacks have restored the source groups. Text already on
+screen picks up the new colors without a panel redraw.
+
 Characters occupy a dense row grid. Width metadata is sparse: only wide-character
 heads and continuation cells need entries; ordinary cells have implicit width
 one. This avoids allocating and filling a second dense grid on every repaint.
