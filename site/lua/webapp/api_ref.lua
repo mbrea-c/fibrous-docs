@@ -258,7 +258,7 @@ return {
 				title = "Widget mode indicator",
 				rows = {
 					{ "w:fibrous_widget_mode", "window variable", "true on the active widget-mode window, unset on exit" },
-					{ "FibrousWidgetMode", "highlight group", "upper-right WIDGET label, linked to ModeMsg" },
+					{ "FibrousWidgetMode", "highlight group", "WIDGET label at the upper right, green by default" },
 				},
 			},
 			{ kind = "h", text = "on_key: app-defined keys" },

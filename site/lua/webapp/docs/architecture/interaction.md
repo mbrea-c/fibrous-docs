@@ -32,11 +32,13 @@ Use `:FibrousToggleWidgetMode` for the same action from a command or a dotfile
 mapping. Set `vim.g.fibrous_widget_mode_key` to another chord to customize
 the local binding, or to `false` to use just the command.
 
-A `WIDGET` label marks the focused canvas while it is navigating, even when
-there are no controls. It uses a free top border or a small corner overlay.
-Its highlight group is `FibrousWidgetMode`, linked to `ModeMsg`. A statusline
-can read `vim.w[winid].fibrous_widget_mode` for the window it draws. The
-value is `true` on the navigating window and `nil` elsewhere.
+A green `WIDGET` label marks the focused canvas, even when it has no controls.
+It sits at the right of the nearest available top border. A scrolling list
+inside a bordered popup uses the popup's frame. If every enclosing frame is
+borderless or already has a title, the label uses the canvas's upper-right
+corner. Customize its color with the `FibrousWidgetMode` highlight group.
+For statuslines, `vim.w[winid].fibrous_widget_mode` is `true` on the
+navigating window and `nil` elsewhere.
 
 `h`, `j`, `k`, and `l` choose the nearest control in the chosen direction.
 Vertical moves remember the preferred column. Counts repeat the move, and
