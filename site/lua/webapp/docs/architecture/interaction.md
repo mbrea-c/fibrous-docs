@@ -21,23 +21,35 @@ explicitly, never by traversal. Each container's own interaction layer cycles
 
 ## widget mode
 
-Every toplevel view starts in Normal mode. Press `<Esc>` to enter widget mode
-at the nearest visible control. A cursor already on a control stays in place.
-Links, buttons, editable fields, and controls displayed inside a container
-are all reachable from the root cursor.
+Widget mode is on by default. Press `<leader>w` in Normal mode in a focused
+Fibrous window to toggle it for every view in the session, including views
+opened later. The shortcut works in the root, containers, prompts and
+raw-buffer editors. Ordinary windows keep their bindings. An existing buffer-local
+mapping for the same chord takes precedence. With Space as leader, Space
+alone activates after the mapping timeout and Space followed by `w` toggles.
 
-`h`, `j`, `k`, and `l` choose the closest target in the requested direction,
-measured in display cells. Vertical moves remember the preferred column. Counts
-repeat the move, and the cursor holds at an edge. `<Tab>` keeps its document
-order. Other Normal-mode motions run first. For example, `<C-u>` scrolls up
-and then snaps within the resulting viewport. If it contains no target, the
-cursor stays where the motion landed.
+Use `:FibrousToggleWidgetMode` for the same action from a command or a dotfile
+mapping. Set `vim.g.fibrous_widget_mode_key` to another chord to customize
+the local binding, or to `false` to use just the command.
 
-`<Space>` activates a button, checkbox, or link and keeps widget mode active.
-`<CR>` leaves widget mode and runs the view's Return binding. A second
-`<Esc>` leaves at the current cell. Leaving the view or entering another Vim
-mode, including a search with `/`, also ends widget mode. Normal-mode `<Esc>`
-inside a focused child window returns to its parent.
+A `WIDGET` label marks the focused canvas while it is navigating, even when
+there are no controls. It uses a free top border or a small corner overlay.
+Its highlight group is `FibrousWidgetMode`, linked to `ModeMsg`. A statusline
+can read `vim.w[winid].fibrous_widget_mode` for the window it draws. The
+value is `true` on the navigating window and `nil` elsewhere.
+
+`h`, `j`, `k`, and `l` choose the nearest control in the chosen direction.
+Vertical moves remember the preferred column. Counts repeat the move, and
+the cursor holds at an edge. Other motions run first. For example, `<C-u>`
+scrolls up, then snaps within the new viewport if it contains a control.
+
+From a parent, navigation can reach controls visible inside a container.
+`<Space>` activates a control in place. `<CR>` runs the view's Return action
+and can transfer focus. Inside a focused container, navigation uses its own
+scroll position and rendered controls. Editable children keep their usual
+editing keys. Normal-mode `<Esc>` returns to the parent. Switching modes or
+working in another buffer pauses navigation until focus returns to a Fibrous
+canvas in Normal mode.
 
 ## cursor anchor
 

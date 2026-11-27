@@ -238,7 +238,7 @@
       # `nix flake check` runs the docs suite in the build sandbox, in a fully
       # isolated headless Neovim (no user config, no plugins), against the PINNED
       # fibrous. To gate against a WIP fibrous instead, add
-      # `--override-input fibrous path:../nui-reactive`.
+      # `--override-input fibrous path:../fibrous.nvim`.
       checks = forAllSystems (
         system: pkgs: {
           tests =
