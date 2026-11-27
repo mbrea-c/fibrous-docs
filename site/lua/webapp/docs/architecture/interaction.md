@@ -41,8 +41,11 @@ For statuslines, `vim.w[winid].fibrous_widget_mode` is `true` on the
 navigating window and `nil` elsewhere.
 
 `h`, `j`, `k`, and `l` choose the nearest control in the chosen direction.
-Vertical moves remember the preferred column. Counts repeat the move, and
-the cursor holds at an edge. Other motions run first. For example, `<C-u>`
+The cursor lands at the top left of the control's visible content, skipping
+button borders and padding. A wrapped link uses the start of its first visible
+fragment. Vertical moves remember the column you aimed at, even when a wide
+control's label starts farther left. Counts repeat the move, and the cursor
+holds at an edge. Other motions run first. For example, `<C-u>`
 scrolls up, then snaps within the new viewport if it contains a control.
 
 From a parent, navigation can reach controls visible inside a container.

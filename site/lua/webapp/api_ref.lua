@@ -247,7 +247,7 @@ return {
 				title = "Widget mode on Fibrous canvases",
 				rows = {
 					{ "<leader>w", "Normal, focused Fibrous window", "toggle widget navigation for this Neovim session (on by default)" },
-					{ "h / j / k / l", "Widget", "move between controls by direction, with an optional count" },
+					{ "h / j / k / l", "Widget", "move to the nearest control in that direction and land on its first visible content cell (accepts a count)" },
 					{ "<Space>", "Widget", "activate the control and keep navigating" },
 					{ "<CR>", "Widget", "activate the control, entering a child when applicable" },
 					{ "<Esc>", "Focused child, Normal", "return to the parent" },
