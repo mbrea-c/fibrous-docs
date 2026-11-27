@@ -43,9 +43,9 @@ local STYLE_PROPS = {
 
 -- The interaction vocabulary: node-level props (not under `style`) that make a
 -- node respond to the cursor. Shared reference, surfaced on the API ▸ Interaction
--- tab; button/checkbox/text_input/raw_buffer set the relevant ones for you.
+-- tab. Buttons and checkboxes set their roles on the underlying node.
 local INTERACTION_PROPS = {
-	{ "role", "string", "\"button\" | \"checkbox\" — marks the node interactive (hover cue + activation)" },
+	{ "role", "string", "Marks a widget-mode target and enables hover. The button and checkbox roles also support activation." },
 	{ "on_press", "fun(x)", "role=\"button\": fired by <CR>/<Space>/click (x = cursor column within the node)" },
 	{ "on_toggle", "fun(v)", "role=\"checkbox\": fired with the NEW checked value" },
 	{ "on_key", "table", "{ [key] = fun(x) } — app keys routed to the node under the cursor; the key must be listed in the mount `keys` opt (needs no role)" },

@@ -238,10 +238,21 @@ return {
 				text = "Each flush target renders into an unmodifiable buffer; interactivity rides the cursor. A "
 					.. "node opts in with node-level props (NOT under `style`). `role` marks it a button "
 					.. "or checkbox: the deepest role-carrying node under the cursor takes the hover cue, "
-					.. "and <CR>/<Space>/click activates it. button/checkbox/text_input/raw_buffer set these "
-					.. "for you — reach for the raw props to make any node interactive.",
+					.. "and <CR>/<Space>/click activates it. Buttons and checkboxes set their roles for you. "
+					.. "Text inputs and raw buffers are widget targets through their subwindows.",
 			},
 			{ kind = "table", title = "props", rows = components_ref.INTERACTION_PROPS },
+			{
+				kind = "table",
+				title = "Widget mode on toplevel views",
+				rows = {
+					{ "<Esc>", "Normal", "enter widget mode at the nearest visible control" },
+					{ "h / j / k / l", "Widget", "move between controls by direction, with an optional count" },
+					{ "<Space>", "Widget", "activate the control and keep navigating" },
+					{ "<CR>", "Widget", "leave widget mode and activate" },
+					{ "<Esc>", "Widget", "leave widget mode at the current cell" },
+				},
+			},
 			{ kind = "h", text = "on_key: app-defined keys" },
 			{
 				kind = "p",

@@ -19,6 +19,26 @@ the target's interactive stops in document order. Subwindows are always entered
 explicitly, never by traversal. Each container's own interaction layer cycles
 *its* stops.
 
+## widget mode
+
+Every toplevel view starts in Normal mode. Press `<Esc>` to enter widget mode
+at the nearest visible control. A cursor already on a control stays in place.
+Links, buttons, editable fields, and controls displayed inside a container
+are all reachable from the root cursor.
+
+`h`, `j`, `k`, and `l` choose the closest target in the requested direction,
+measured in display cells. Vertical moves remember the preferred column. Counts
+repeat the move, and the cursor holds at an edge. `<Tab>` keeps its document
+order. Other Normal-mode motions run first. For example, `<C-u>` scrolls up
+and then snaps within the resulting viewport. If it contains no target, the
+cursor stays where the motion landed.
+
+`<Space>` activates a button, checkbox, or link and keeps widget mode active.
+`<CR>` leaves widget mode and runs the view's Return binding. A second
+`<Esc>` leaves at the current cell. Leaving the view or entering another Vim
+mode, including a search with `/`, also ends widget mode. Normal-mode `<Esc>`
+inside a focused child window returns to its parent.
+
 ## cursor anchor
 
 A relayout (a width resize rewraps every line; an insert shifts the tail) would
